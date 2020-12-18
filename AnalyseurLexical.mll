@@ -13,6 +13,8 @@ let keyword_or_ident =
       "void", VOID;
       "true", TRUE;
       "false", FALSE;
+      "if", IF;
+      "else", ELSE;
       "while", WHILE;
       "<",LT;
       ">",GT;

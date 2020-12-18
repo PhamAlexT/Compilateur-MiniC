@@ -9,8 +9,8 @@ open SyntaxeAbstr
 %token EQUAL "="
 %token PLUS "+" MINUS "-"
 %token TIMES
-%token L_PAR R_PAR
-%token L_ACC R_ACC
+%token L_PAR "(" R_PAR ")"
+%token L_ACC "{" R_ACC "}"
 %token LT GT LEQ GEQ
 %token INT BOOL VOID
 %token TRUE FALSE
@@ -23,8 +23,7 @@ open SyntaxeAbstr
 
 %left PLUS MINUS
 %left TIMES
-%left R_PAR
-%left R_ACC
+%left L_PAR IDENT INT
 
 %start prog
 %type <SyntaxeAbstr.prog> prog
@@ -49,25 +48,29 @@ param:
 
 global:
 | INT i=IDENT EQUAL value = CONST SEMICOLON {i,Int,CreaInt value}
-| BOOL i=IDENT EQUAL value = TRUE  SEMICOLON {i,Bool,CreaBool true}
-| BOOL i=IDENT EQUAL value = FALSE  SEMICOLON {i,Bool,CreaBool false}
+| BOOL i=IDENT EQUAL value = TRUE SEMICOLON {i,Bool,CreaBool true}
+| BOOL i=IDENT EQUAL value = FALSE SEMICOLON {i,Bool,CreaBool false}
 ;
 
 fun_def:
 | t = typesFonctions i = IDENT L_PAR ps = separated_list(COMMA,param) R_PAR 
 	L_ACC s = list(instr) R_ACC
-	{{name=i;params=ps;return=t;code=s;locals=[]}}
+	{{name=i;params=ps;return=Int;code=s;locals=[]}}
 ;
 
 expr:
 | n = CONST
 	{Cst n}
+| "(" e = expr ")"
+	{e}
 | e1=expr "+" e2=expr
 	{Add(e1,e2)}
 | e1=expr TIMES e2=expr
 	{Mul(e1,e2)}
 | id=IDENT
 	{Get(id)}
+| e1 = expr LT e2 = expr 
+	{Lt(e1,e2)}
 ;
 
 instr:
@@ -81,7 +84,7 @@ instr:
 	{Set(s,Cst 1)}
 | INT s = IDENT EQUAL e=expr SEMICOLON
 	{Set(s,e)}
-| IF e1=expr seq1=list(instr) ELSE seq2=list(instr)
+| IF e1=expr "{" seq1=list(instr) "}" ELSE "{" seq2=list(instr) "}"
 	{If(e1,seq1,seq2)}
 | WHILE e=expr s = list(instr)
 	{While(e,s)}

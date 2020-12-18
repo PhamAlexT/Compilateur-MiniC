@@ -53,7 +53,7 @@ global:
 ;
 
 fun_def:
-| t = typesFonctions i = IDENT L_PAR ps = separated_list(COMMA,param) R_PAR 
+| t = typesFonctions i = IDENT L_PAR ps = separated_list(",",param) R_PAR 
 	L_ACC s = list(instr) R_ACC
 	{{name=i;params=ps;return=Int;code=s;locals=[]}}
 ;
@@ -67,6 +67,8 @@ expr:
 	{Add(e1,e2)}
 | e1=expr TIMES e2=expr
 	{Mul(e1,e2)}
+| id=IDENT "(" e = expr e1 = expr ")"
+	{Call(id,[e,e1])}
 | id=IDENT
 	{Get(id)}
 | e1 = expr LT e2 = expr 

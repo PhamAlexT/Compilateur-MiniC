@@ -1,0 +1,5 @@
+/.depend
+/AnalyseurSyntaxique.automaton
+/AnalyseurSyntaxique.conflicts
+/_build
+/main.native

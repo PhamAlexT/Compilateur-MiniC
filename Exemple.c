@@ -1,5 +1,4 @@
 int PARAM = 5;
-int PARAM2 = 5;
 bool test = true;
 
 
@@ -9,14 +8,14 @@ void jeSuisUnDebutant(int p1, bool p2){
   return test;
 }
 
-  int fact(int n) {
-    if (n < 2) {
-      return 1;
-    } else {
-      return n * t(n,n);
-    }
+int fact(int n) {
+  if (n < 2) {
+    return 1;
+   } else {
+  return n * fact(n + -1);
   }
+}
   
-int main(){
-
+void main(){
+  putchar(5);
 }

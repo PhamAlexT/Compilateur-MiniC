@@ -66,14 +66,15 @@ let newline() = col := 0; incr line
 
 
 let alpha = ['a'-'z' 'A'-'Z']
-let digit = ['0'-'9']
-let ident = (alpha) (alpha | digit | '_')*
+let digit =  ['0'-'9'] | '-'['0'-'9']  (*nb positif ou nb negatif*)
+let ident = (alpha) (alpha | ['0'-'9'] | '_')*
 
 rule token = parse
                       | ' '    { space(); token lexbuf }
                       | '\n'   { newline(); new_line lexbuf;token lexbuf }
                       (* Commentaire eventuel *)
                       | digit+ as s { CONST (int_of_string s) }
+                      | "putchar" {PUTCHAR}   (*ajout putchar pout pas qu'il soit pas dectecte comme un ident*)
                       | ident as s { keyword_or_ident s}
                       | '='   { EQUAL }
                       | '+'    { PLUS }

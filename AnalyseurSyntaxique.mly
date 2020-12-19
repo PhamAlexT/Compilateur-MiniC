@@ -75,21 +75,15 @@ expr:
 (*constante*)
 | n = CONST
 	{Cst n}
-(*addition*)
-| e1=expr op=PLUS e2=expr
-	{Add(e1,e2)}
-(*multiplication*)
-| e1=expr TIMES e2=expr
-	{Mul(e1,e2)}
+(* Opération binaire*)
+| e1=expr op=binop e2=expr
+	{Binop(op,e1,e2)}
 (*appel fonction *)
 | id=IDENT "(" e = separated_list(COMMA,expr) ")"  (* pour un appel de fonctions : essai (a, b+c) : identifiant + plusieurs expr qu'on veut mettre en liste chaque expr est separe par une virgule*)								 
 	{Call(id,e)} 
 (* acces variable *)
 | id=IDENT
 	{Get(id)}
-(*comparaison : < *)
-| e1 = expr LT e2 = expr 
-	{Lt(e1,e2)}
 ;
 
 instr:
@@ -117,11 +111,14 @@ instr:
 	{Return e}
 ;
 
-%inline comp:
+%inline binop:
+| PLUS {Add}
+| MINUS {Sub}
+| TIMES {Mul}
 | LT {Lt}
-| GT {Lt}
-| LEQ {Lt}
-| GEQ {Lt}
+| GT {Gt}
+| LEQ {Leq}
+| GEQ {Geq}
 ;
 
 %inline typesVar:

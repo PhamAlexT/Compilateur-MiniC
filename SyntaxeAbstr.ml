@@ -3,12 +3,18 @@ type typ =
     | Bool
     | Void
 
+type binop=
+    | Add
+    | Sub
+    | Mul
+    | Lt
+    | Gt
+    | Leq
+    | Geq
+
 type expr =
     | Cst  of int
-    | Add  of expr * expr
-    | Sub  of expr * expr
-    | Mul  of expr * expr
-    | Lt   of expr * expr
+    | Binop of binop * expr * expr
     | Get  of string
     | Call of string * expr list
 

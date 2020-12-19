@@ -26,6 +26,7 @@ let keyword_or_ident =
 
 let print_token = function
   | PUTCHAR -> printf "PUTCHAR\n"
+  | MAIN -> printf "MAIN \n"
   | IDENT(s) -> printf "IDENT %s\n" s
   | CONST(n) -> printf "CONST %i\n" n
   | AFF -> printf "AFFECTATION \n"

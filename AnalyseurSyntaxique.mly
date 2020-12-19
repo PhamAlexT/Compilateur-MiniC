@@ -11,7 +11,7 @@ open SyntaxeAbstr
 %token TIMES
 %token L_PAR "(" R_PAR ")"
 %token L_ACC "{" R_ACC "}"
-%token LT GT LEQ GEQ
+%token LT GT LEQ GEQ EQ NEQ
 %token INT BOOL VOID
 %token TRUE FALSE
 %token IF ELSE WHILE

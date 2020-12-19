@@ -35,6 +35,8 @@ let print_token = function
   | R_PAR     -> printf "R_PAR\n"
   | L_ACC -> printf "L_ACC\n"
   | R_ACC ->printf "R_ACC\n"
+  | EQ -> printf "EQUAL\n"
+  | NEQ -> printf "NOT EQUAL\n"
   | LT -> printf "LESS THAN\n"
   | GT -> printf "GREATER THAN\n"
   | GEQ -> printf "GEQ \n"
@@ -69,6 +71,8 @@ rule token = parse
                       | '\n'   { newline(); new_line lexbuf;token lexbuf }
                       | digit+ as s { CONST (int_of_string s) }
                       | ident as s { keyword_or_ident s}
+                      | "==" {EQ}
+                      | "!=" {NEQ}
                       | '='   { AFF }
                       | '+'    { PLUS }
                       | '-' {MINUS}

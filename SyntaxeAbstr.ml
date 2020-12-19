@@ -7,6 +7,8 @@ type binop=
     | Add
     | Sub
     | Mul
+    | Eq
+    | Neq
     | Lt
     | Gt
     | Leq

@@ -20,9 +20,10 @@ open SyntaxeAbstr
 %token EOF
 
 %nonassoc ELSE 
-%left LT GT LEQ GEQ
+
 %left PLUS MINUS
 %left TIMES
+%left L_PAR IDENT INT
 
 %start prog
 %type <SyntaxeAbstr.prog> prog

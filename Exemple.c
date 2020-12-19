@@ -10,11 +10,7 @@ int fact(int n) {
 
 void jeSuisUnDebutant(int p1, bool p2){
   int test = 5;
-  int test2 = 5+3;
-  return test;
-  if ( 5 ) {
-    int machin = 5;
-  } else {}
+  int machin = 10 + 10;
 }
   
 void main(){

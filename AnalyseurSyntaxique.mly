@@ -71,7 +71,7 @@ global:
 | INT i=IDENT SEMICOLON {Printf.printf "global int sans valeur\n" ;(i,Int)}
 | BOOL i=IDENT SEMICOLON {Printf.printf "global false\n"; (i,Bool)}
 (*cas avec valeur*)
-| INT i=IDENT "=" value = CONST SEMICOLON {(i,Int)}
+| INT i=IDENT "=" value = expr SEMICOLON {(i,Int)}
 | BOOL i=IDENT "=" value = TRUE  SEMICOLON {(i,Bool)}
 | BOOL i=IDENT "=" value = FALSE  SEMICOLON {(i,Bool)}
 ;
@@ -98,13 +98,6 @@ instr:
 (*affichage*)
 | PUTCHAR L_PAR e=expr R_PAR ";"
 	{Putchar(e)}
-(*var locales*)
-| BOOL s = IDENT "=" FALSE ";"
-	{Set(s,Cst 0)}
-| BOOL s = IDENT "=" TRUE ";"
-	{Set(s,Cst 1)}
-| INT s = IDENT "=" e=expr SEMICOLON
-	{Set(s,e)}
 (*if*)
 | IF "(" e1=expr ")" "{" seq1=list(instr) "}" ELSE "{" seq2=list(instr) "}"
 	{If(e1,seq1,seq2)}

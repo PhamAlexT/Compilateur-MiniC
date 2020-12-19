@@ -82,6 +82,7 @@ let analyseFonction fun_definition =
 
 
 let rec analyseFonctions l =
+	(* Si il n y a pas de main*)
 	match l with
 		| []->()
 		| hd::tl -> analyseFonction(hd); analyseFonctions tl

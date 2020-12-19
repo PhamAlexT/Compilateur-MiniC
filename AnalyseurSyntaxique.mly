@@ -6,7 +6,7 @@ open SyntaxeAbstr
 %token <string> IDENT
 %token SEMICOLON ";"
 %token COMMA ","
-%token EQUAL "="
+%token AFF "="
 %token PLUS "+" MINUS "-"
 %token TIMES
 %token L_PAR "(" R_PAR ")"
@@ -62,9 +62,9 @@ global:
 | INT i=IDENT SEMICOLON {Printf.printf "global int sans valeur\n" ;i,Int,CreaInt 0}
 | BOOL i=IDENT SEMICOLON {Printf.printf "global false\n"; i,Bool,CreaBool false}
 (*cas avec valeur*)
-| INT i=IDENT EQUAL value = CONST SEMICOLON {Printf.printf "global int\n" ;i,Int,CreaInt value}
-| BOOL i=IDENT EQUAL value = TRUE  SEMICOLON {Printf.printf "global true\n"; i,Bool,CreaBool true}
-| BOOL i=IDENT EQUAL value = FALSE  SEMICOLON {Printf.printf "global false\n"; i,Bool,CreaBool false}
+| INT i=IDENT AFF value = CONST SEMICOLON {Printf.printf "global int\n" ;i,Int,CreaInt value}
+| BOOL i=IDENT AFF value = TRUE  SEMICOLON {Printf.printf "global true\n"; i,Bool,CreaBool true}
+| BOOL i=IDENT AFF value = FALSE  SEMICOLON {Printf.printf "global false\n"; i,Bool,CreaBool false}
 ;
 
 expr:
@@ -97,11 +97,11 @@ instr:
 | PUTCHAR L_PAR e=expr R_PAR ";"
 	{Putchar(e)}
 (*var locales*)
-| BOOL s = IDENT EQUAL FALSE ";"
+| BOOL s = IDENT AFF FALSE ";"
 	{Set(s,Cst 0)}
-| BOOL s = IDENT EQUAL TRUE ";"
+| BOOL s = IDENT AFF TRUE ";"
 	{Set(s,Cst 1)}
-| INT s = IDENT EQUAL e=expr SEMICOLON
+| INT s = IDENT AFF e=expr SEMICOLON
 	{Set(s,e)}
 (*if*)
 | IF "(" e1=expr ")" "{" seq1=list(instr) "}" ELSE "{" seq2=list(instr) "}"

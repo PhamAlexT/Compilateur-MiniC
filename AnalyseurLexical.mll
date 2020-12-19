@@ -11,6 +11,7 @@ let keyword_or_ident =
       "int", INT;
       "bool", BOOL;
       "void", VOID;
+      "=", AFF;
       "true", TRUE;
       "false", FALSE;
       "if", IF;
@@ -33,7 +34,7 @@ let print_token = function
   | PUTCHAR -> printf "PUTCHAR\n"
   | IDENT(s) -> printf "IDENT %s\n" s
   | CONST(n) -> printf "CONST %i\n" n
-  | EQUAL -> printf "EQUAL \n"
+  | AFF -> printf "AFFECTATION \n"
   | PLUS     -> printf "PLUS\n"
   | MINUS -> printf "MINUS\n"
   | TIMES -> printf "TIMES\n"
@@ -74,7 +75,6 @@ rule token = parse
                       | ' '    { space(); token lexbuf }
                       | '\n'   { newline(); new_line lexbuf;token lexbuf }
                       | digit+ as s { CONST (int_of_string s) }
-                      | "putchar" {PUTCHAR}   (*ajout putchar pout pas qu'il soit pas dectecte comme un ident*)
                       | ident as s { keyword_or_ident s}
                       | '='   { EQUAL }
                       | '+'    { PLUS }

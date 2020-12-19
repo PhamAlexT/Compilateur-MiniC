@@ -3,6 +3,7 @@ let () =
   let c = open_in fichier in
   let lexbuf = Lexing.from_channel c in
   let prog = AnalyseurSyntaxique.prog AnalyseurLexical.token lexbuf in
+  let _ = AnalyseurTypage.analyseProgramme prog in
   ignore(prog);
   close_in c;
   Printf.printf "Fin \n";

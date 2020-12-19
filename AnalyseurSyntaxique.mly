@@ -19,9 +19,10 @@ open SyntaxeAbstr
 %token RETURN
 %token EOF
 
+%left LT LEQ GT GEQ
 %left PLUS MINUS
 %left TIMES
-%left L_PAR IDENT INT
+
 
 %start prog
 %type <SyntaxeAbstr.prog> prog
@@ -31,7 +32,11 @@ open SyntaxeAbstr
 (* programme est compose d'une premiere partie de var globales et suivi de declarations de fonctions puis fin fichier*)
 (*sinon error*)
 prog:
-| gl=globals fs=list(fun_def) EOF {{globals=gl;functions=fs}} 
+| gl=globals fs=list(fun_def) EOF 
+	{
+	{globals=gl;functions=fs}
+	}
+	 
 | error
 		{ let pos = $startpos in
 			let message = Printf.sprintf
@@ -50,8 +55,10 @@ param:
 (*regle pour les fonctions : types + identifiant  + ( + parametre + ) + { + sequence + } *)
 fun_def:
 | t = typesFonctions i = IDENT L_PAR ps = separated_list(COMMA,param) R_PAR 
-	L_ACC s = list(instr) R_ACC 
-	{Printf.printf "fun_def\n" ;{name=i;params=ps;return=t;locals=[]; code = s}} 
+	L_ACC l = globals s = list(instr) R_ACC 
+	{
+		Printf.printf "Nom fonction: %s\n" i;{name=i;params=ps;return=t;locals=l; code = s}
+	} 
 ;
 
 globals:
@@ -61,12 +68,12 @@ globals:
 (*valeur globales d'un programme *)
 global:
 (*cas sans value : initialise un int a 0 et un bool a false*)
-| INT i=IDENT SEMICOLON {Printf.printf "global int sans valeur\n" ;i,Int,CreaInt 0}
-| BOOL i=IDENT SEMICOLON {Printf.printf "global false\n"; i,Bool,CreaBool false}
+| INT i=IDENT SEMICOLON {Printf.printf "global int sans valeur\n" ;(i,Int)}
+| BOOL i=IDENT SEMICOLON {Printf.printf "global false\n"; (i,Bool)}
 (*cas avec valeur*)
-| INT i=IDENT "=" value = CONST SEMICOLON {Printf.printf "global int\n" ;i,Int,CreaInt value}
-| BOOL i=IDENT "=" value = TRUE  SEMICOLON {Printf.printf "global true\n"; i,Bool,CreaBool true}
-| BOOL i=IDENT "=" value = FALSE  SEMICOLON {Printf.printf "global false\n"; i,Bool,CreaBool false}
+| INT i=IDENT "=" value = CONST SEMICOLON {(i,Int)}
+| BOOL i=IDENT "=" value = TRUE  SEMICOLON {(i,Bool)}
+| BOOL i=IDENT "=" value = FALSE  SEMICOLON {(i,Bool)}
 ;
 
 expr:

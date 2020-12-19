@@ -22,6 +22,7 @@ let keyword_or_ident =
       ">=",GEQ;
       ";", SEMICOLON;
       ",", COMMA;
+      "putchar", PUTCHAR;
       "return",RETURN
     ] ;
   fun s ->
@@ -29,6 +30,7 @@ let keyword_or_ident =
     with Not_found -> IDENT(s)
 
 let print_token = function
+  | PUTCHAR -> printf "PUTCHAR\n"
   | IDENT(s) -> printf "IDENT %s\n" s
   | CONST(n) -> printf "CONST %i\n" n
   | EQUAL -> printf "EQUAL \n"
@@ -53,7 +55,6 @@ let print_token = function
   | IF -> printf "IF\n"
   | ELSE ->printf "ELSE\n"
   | WHILE -> printf "WHILE\n"
-  | PUTCHAR -> printf "PUTCHAR\n"
   | RETURN -> printf "RETURN\n"
   | EOF      -> assert false
 
@@ -72,7 +73,6 @@ let ident = (alpha) (alpha | ['0'-'9'] | '_')*
 rule token = parse
                       | ' '    { space(); token lexbuf }
                       | '\n'   { newline(); new_line lexbuf;token lexbuf }
-                      (* Commentaire eventuel *)
                       | digit+ as s { CONST (int_of_string s) }
                       | "putchar" {PUTCHAR}   (*ajout putchar pout pas qu'il soit pas dectecte comme un ident*)
                       | ident as s { keyword_or_ident s}

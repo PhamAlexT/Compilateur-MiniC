@@ -17,5 +17,5 @@ int fact(int n) {
 }
   
 void main(){
-  putchar(5);
+  putchar(fact(PARAM));
 }

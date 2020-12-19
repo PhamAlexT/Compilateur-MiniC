@@ -94,7 +94,7 @@ instr:
 | e=expr
 	{Expr e}
 (*affichage*)
-| PUTCHAR L_PAR e=expr R_PAR
+| PUTCHAR L_PAR e=expr R_PAR ";"
 	{Putchar(e)}
 (*var locales*)
 | BOOL s = IDENT EQUAL FALSE ";"

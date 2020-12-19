@@ -8,6 +8,7 @@ let keyword_or_ident =
   List.iter
     (fun (s, k) -> Hashtbl.add h s k)
     [
+      "main", MAIN;
       "int", INT;
       "bool", BOOL;
       "void", VOID;

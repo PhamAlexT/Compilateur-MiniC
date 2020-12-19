@@ -4,6 +4,7 @@ open SyntaxeAbstr
 
 %token <int> CONST
 %token <string> IDENT
+%token MAIN
 %token SEMICOLON ";"
 %token COMMA ","
 %token AFF "="
@@ -20,10 +21,9 @@ open SyntaxeAbstr
 %token EOF
 
 %nonassoc ELSE 
-
+%left LT GT LEQ GEQ
 %left PLUS MINUS
 %left TIMES
-%left L_PAR IDENT INT
 
 %start prog
 %type <SyntaxeAbstr.prog> prog

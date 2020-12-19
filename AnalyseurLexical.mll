@@ -76,7 +76,7 @@ rule token = parse
                       | '\n'   { newline(); new_line lexbuf;token lexbuf }
                       | digit+ as s { CONST (int_of_string s) }
                       | ident as s { keyword_or_ident s}
-                      | '='   { EQUAL }
+                      | '='   { AFF }
                       | '+'    { PLUS }
                       | '-' {MINUS}
                       | '*' {TIMES}

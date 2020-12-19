@@ -51,8 +51,10 @@ param:
 (*regle pour les fonctions : types + identifiant  + ( + parametre + ) + { + sequence + } *)
 fun_def:
 | t = typesFonctions i = IDENT L_PAR ps = separated_list(COMMA,param) R_PAR 
-	L_ACC s = list(instr) R_ACC 
-	{Printf.printf "fun_def\n" ;{name=i;params=ps;return=t;locals=[]; code = s}} 
+	L_ACC l = globals s = list(instr) R_ACC 
+	{Printf.printf "fun_def\n" ;
+		{name=i;params=ps;return=t;locals=l; code = s}
+	} 
 ;
 
 globals:
@@ -62,18 +64,20 @@ globals:
 (*valeur globales d'un programme *)
 global:
 (*cas sans value : initialise un int a 0 et un bool a false*)
-| INT i=IDENT SEMICOLON {Printf.printf "global int sans valeur\n" ;i,Int,CreaInt 0}
-| BOOL i=IDENT SEMICOLON {Printf.printf "global false\n"; i,Bool,CreaBool false}
+| INT i=IDENT SEMICOLON {Printf.printf "global int sans valeur\n" ; (i,Int)}
+| BOOL i=IDENT SEMICOLON {Printf.printf "global false\n"; (i,Bool)}
 (*cas avec valeur*)
-| INT i=IDENT "=" value = CONST SEMICOLON {Printf.printf "global int\n" ;i,Int,CreaInt value}
-| BOOL i=IDENT "=" value = TRUE  SEMICOLON {Printf.printf "global true\n"; i,Bool,CreaBool true}
-| BOOL i=IDENT "=" value = FALSE  SEMICOLON {Printf.printf "global false\n"; i,Bool,CreaBool false}
+| t = typesVar i = IDENT "=" e = expr ";" {Set(i,e); (i,t)}
 ;
 
 expr:
 (*constante*)
 | n = CONST
 	{Cst n}
+| TRUE
+	{Cst 1}
+| FALSE
+	{Cst 0}
 (* Opération binaire*)
 | e1=expr op=binop e2=expr
 	{Binop(op,e1,e2)}

@@ -37,12 +37,8 @@ type fun_def = {
     code:   seq;
 }
 
-type valeur =
-| CreaInt of int
-| CreaBool of bool
-
 type prog = {
-    globals:   (string * typ * valeur) list;
+    globals:   (string * typ ) list;
     functions: fun_def list;
 }
 

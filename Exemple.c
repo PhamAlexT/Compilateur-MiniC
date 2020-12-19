@@ -23,7 +23,7 @@ void jeSuisUnDebutant(int p1, bool p2)
   return test;
 }
 
-void main()
+int main()
 {
-  putchar(fact(PARAM));
+  int test = 5;
 }

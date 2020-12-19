@@ -4,7 +4,6 @@ open SyntaxeAbstr
 
 %token <int> CONST
 %token <string> IDENT
-%token MAIN
 %token SEMICOLON ";"
 %token COMMA ","
 %token AFF "="

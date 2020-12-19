@@ -7,3 +7,6 @@ Commande pour compiler:
 Commande pour éxecuter:
 *./main.native Exemple.c*
 
+## Ce qui a été fait:
+TBA
+

@@ -11,11 +11,18 @@ let keyword_or_ident =
       "int", INT;
       "bool", BOOL;
       "void", VOID;
+      "=", AFF;
       "true", TRUE;
       "false", FALSE;
       "if", IF;
       "else", ELSE;
       "while", WHILE;
+      "<",LT;
+      ">",GT;
+      "<=", LEQ;
+      ">=",GEQ;
+      ";", SEMICOLON;
+      ",", COMMA;
       "putchar", PUTCHAR;
       "return",RETURN
     ] ;
@@ -83,8 +90,6 @@ rule token = parse
                       | '}'	{R_ACC}
                       | '<' {LT}
                       | '>' {GT}
-                      | "<=" {LEQ}
-                      | ">=" {GEQ}
                       | ';' {SEMICOLON}
                       | ',' {COMMA}
                       | _ as c {	failwith	(sprintf "Ligne %i, Colonne %i, caractère illégale : %c" !line !col c)}

@@ -6,6 +6,7 @@ type typ =
 type expr =
     | Cst  of int
     | Add  of expr * expr
+    | Sub  of expr * expr
     | Mul  of expr * expr
     | Lt   of expr * expr
     | Get  of string

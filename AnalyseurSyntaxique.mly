@@ -19,7 +19,7 @@ open SyntaxeAbstr
 %token RETURN
 %token EOF
 
-%nonassoc ELSE
+%nonassoc ELSE 
 
 %left PLUS MINUS
 %left TIMES
@@ -33,7 +33,7 @@ open SyntaxeAbstr
 (* programme est compose d'une premiere partie de var globales et suivi de declarations de fonctions puis fin fichier*)
 (*sinon error*)
 prog:
-| gl=list(global) fs=list(fun_def) EOF {{globals=gl;functions=fs}} 
+| gl=globals fs=list(fun_def) EOF {{globals=gl;functions=fs}} 
 | error
 		{ let pos = $startpos in
 			let message = Printf.sprintf
@@ -56,15 +56,19 @@ fun_def:
 	{Printf.printf "fun_def\n" ;{name=i;params=ps;return=t;locals=[]; code = s}} 
 ;
 
+globals:
+| g1 = globals g2 = global {g2::g1}
+| {[]}
+;
 (*valeur globales d'un programme *)
 global:
 (*cas sans value : initialise un int a 0 et un bool a false*)
 | INT i=IDENT SEMICOLON {Printf.printf "global int sans valeur\n" ;i,Int,CreaInt 0}
 | BOOL i=IDENT SEMICOLON {Printf.printf "global false\n"; i,Bool,CreaBool false}
 (*cas avec valeur*)
-| INT i=IDENT AFF value = CONST SEMICOLON {Printf.printf "global int\n" ;i,Int,CreaInt value}
-| BOOL i=IDENT AFF value = TRUE  SEMICOLON {Printf.printf "global true\n"; i,Bool,CreaBool true}
-| BOOL i=IDENT AFF value = FALSE  SEMICOLON {Printf.printf "global false\n"; i,Bool,CreaBool false}
+| INT i=IDENT "=" value = CONST SEMICOLON {Printf.printf "global int\n" ;i,Int,CreaInt value}
+| BOOL i=IDENT "=" value = TRUE  SEMICOLON {Printf.printf "global true\n"; i,Bool,CreaBool true}
+| BOOL i=IDENT "=" value = FALSE  SEMICOLON {Printf.printf "global false\n"; i,Bool,CreaBool false}
 ;
 
 expr:
@@ -72,13 +76,13 @@ expr:
 | n = CONST
 	{Cst n}
 (*addition*)
-| e1=expr PLUS e2=expr
+| e1=expr op=PLUS e2=expr
 	{Add(e1,e2)}
 (*multiplication*)
 | e1=expr TIMES e2=expr
 	{Mul(e1,e2)}
 (*appel fonction *)
-| id=IDENT "(" e = separated_list(COMMA,expr) ")"    (* pour un appel de fonctions : essai (a, b+c) : identifiant + plusieurs expr qu'on veut mettre en liste chaque expr est separe par une virgule*)								 
+| id=IDENT "(" e = separated_list(COMMA,expr) ")"  (* pour un appel de fonctions : essai (a, b+c) : identifiant + plusieurs expr qu'on veut mettre en liste chaque expr est separe par une virgule*)								 
 	{Call(id,e)} 
 (* acces variable *)
 | id=IDENT
@@ -88,7 +92,6 @@ expr:
 	{Lt(e1,e2)}
 ;
 
-
 instr:
 (*expression simple*)
 | e=expr
@@ -97,11 +100,11 @@ instr:
 | PUTCHAR L_PAR e=expr R_PAR ";"
 	{Putchar(e)}
 (*var locales*)
-| BOOL s = IDENT AFF FALSE ";"
+| BOOL s = IDENT "=" FALSE ";"
 	{Set(s,Cst 0)}
-| BOOL s = IDENT AFF TRUE ";"
+| BOOL s = IDENT "=" TRUE ";"
 	{Set(s,Cst 1)}
-| INT s = IDENT AFF e=expr SEMICOLON
+| INT s = IDENT "=" e=expr SEMICOLON
 	{Set(s,e)}
 (*if*)
 | IF "(" e1=expr ")" "{" seq1=list(instr) "}" ELSE "{" seq2=list(instr) "}"
@@ -120,6 +123,7 @@ instr:
 | LEQ {Lt}
 | GEQ {Lt}
 ;
+
 %inline typesVar:
 | INT {Int}
 | BOOL {Bool}

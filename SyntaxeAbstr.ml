@@ -4,19 +4,16 @@ type typ =
     | Void
 
 type binop=
-    | Add
-    | Sub
-    | Mul
-    | Eq
-    | Neq
-    | Lt
-    | Gt
-    | Leq
-    | Geq
-
+    |Add
+    |Sub
+    |Mul
+    |Lt
+    |Gt
+    |Leq
+    |Geq
 type expr =
     | Cst  of int
-    | Binop of binop * expr * expr
+    | Binop  of binop * expr * expr
     | Get  of string
     | Call of string * expr list
 
@@ -37,8 +34,12 @@ type fun_def = {
     code:   seq;
 }
 
+type valeur =
+| CreaInt of int
+| CreaBool of bool
+
 type prog = {
-    globals:   (string * typ ) list;
+    globals:   (string * typ * valeur) list;
     functions: fun_def list;
 }
 

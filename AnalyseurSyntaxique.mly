@@ -11,15 +11,13 @@ open SyntaxeAbstr
 %token TIMES
 %token L_PAR "(" R_PAR ")"
 %token L_ACC "{" R_ACC "}"
-%token LT GT LEQ GEQ EQ NEQ
+%token LT GT LEQ GEQ
 %token INT BOOL VOID
 %token TRUE FALSE
 %token IF ELSE WHILE
 %token PUTCHAR
 %token RETURN
 %token EOF
-
-%nonassoc ELSE 
 
 %left PLUS MINUS
 %left TIMES
@@ -52,10 +50,8 @@ param:
 (*regle pour les fonctions : types + identifiant  + ( + parametre + ) + { + sequence + } *)
 fun_def:
 | t = typesFonctions i = IDENT L_PAR ps = separated_list(COMMA,param) R_PAR 
-	L_ACC l = globals s = list(instr) R_ACC 
-	{Printf.printf "fun_def\n" ;
-		{name=i;params=ps;return=t;locals=l; code = s}
-	} 
+	L_ACC s = list(instr) R_ACC 
+	{Printf.printf "fun_def\n" ;{name=i;params=ps;return=t;locals=[]; code = s}} 
 ;
 
 globals:
@@ -65,21 +61,19 @@ globals:
 (*valeur globales d'un programme *)
 global:
 (*cas sans value : initialise un int a 0 et un bool a false*)
-| INT i=IDENT SEMICOLON {Printf.printf "global int sans valeur\n" ; (i,Int)}
-| BOOL i=IDENT SEMICOLON {Printf.printf "global false\n"; (i,Bool)}
+| INT i=IDENT SEMICOLON {Printf.printf "global int sans valeur\n" ;i,Int,CreaInt 0}
+| BOOL i=IDENT SEMICOLON {Printf.printf "global false\n"; i,Bool,CreaBool false}
 (*cas avec valeur*)
-| t = typesVar i = IDENT "=" e = expr ";" {Set(i,e); (i,t)}
+| INT i=IDENT "=" value = CONST SEMICOLON {Printf.printf "global int\n" ;i,Int,CreaInt value}
+| BOOL i=IDENT "=" value = TRUE  SEMICOLON {Printf.printf "global true\n"; i,Bool,CreaBool true}
+| BOOL i=IDENT "=" value = FALSE  SEMICOLON {Printf.printf "global false\n"; i,Bool,CreaBool false}
 ;
 
 expr:
 (*constante*)
 | n = CONST
 	{Cst n}
-| TRUE
-	{Cst 1}
-| FALSE
-	{Cst 0}
-(* Opération binaire*)
+(*Opération binaire*)
 | e1=expr op=binop e2=expr
 	{Binop(op,e1,e2)}
 (*appel fonction *)
@@ -120,9 +114,9 @@ instr:
 | MINUS {Sub}
 | TIMES {Mul}
 | LT {Lt}
-| GT {Gt}
-| LEQ {Leq}
-| GEQ {Geq}
+| GT {Lt}
+| LEQ {Lt}
+| GEQ {Lt}
 ;
 
 %inline typesVar:

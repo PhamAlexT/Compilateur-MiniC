@@ -1,6 +1,10 @@
-#Compilateur-MiniC - decembre2020
+# Compilateur-MiniC - Decembre2020
 
-#LDD3 MathsInfo - Alexandre PHAM _ Clémence SEBE
+# LDD3 MathsInfo - Alexandre PHAM _ Clémence SEBE
+
+Accéder au sujet du DM en cliquant [ici](https://www.lri.fr/~blsk/CompilationLDD3/dm-mnc.html) .
+
+## Informations
 
 Commande pour compiler:
 
@@ -24,13 +28,20 @@ Commande pour éxecuter:
     Par exemple, une variable globale sera cachée si une fonction définit un paramètre de même nom.
 
 ## Ce qui a été implémenté:
-* L'analyseur de type peut suggérer des noms de variables ou de fonctions si elles sont jugées pertinents. Nous en discuterons plus loin de comment il fonctionne et ce qui pouvait être fait.
+* L'analyseur de type peut suggérer des noms de variables ou de fonctions si elles sont jugées pertinentes. Nous en discuterons plus loin de comment il fonctionne et ce qui pouvait être fait.
 
 
 ## Remarques
 
 ### Suggestion
-Lorsqu'un nom de variable de fonction n'est pas reconnu, on essaye de voir dans l'environnement si un nom s'y rapproche en se basant sur ce critère: 
-    * La moyenne du code ASCII des autres variables présents dans l'environnement. *
+Lorsqu'un nom de variable de fonction n'est pas reconnu, on essaye de voir dans l'environnement si un nom s'y rapproche en se basant sur ce critère:
+1. Pour un mot $m_1$, nous faisons la somme du code ASCII de chaque caractère du mot que l'on nomme $s_1$.
+2. De même pour un deuxième mot $m_2$ et $s_2$ et la somme défini de la même manière.
+3. Posons $gap = \dfrac{| s_1 - s_2 |}{ max(s_1,s_2)} \times 100$.
+4. Si $gap < 30%$, nous considérons que les mots sont suffisaments proche pour être suggéré.
 
+Posons alors pour le nom de variable $m_1$ et $m_2$ les autres noms de variables de l'environnement. Pour le cas ou $m_2 = m_1$ notre fonction qui juge renvoie faux.
 
+Une autre possibilité aurait été de baser notre système sur la [Distance de Levenshtein](https://fr.wikipedia.org/wiki/Distance_de_Levenshtein) qui est très pertinente ici car elle caractérise / quantifie assez bien les erreurs de programmation qui sont:
+* Inversion des positions de lettre.
+* Quelques lettres en plus ou en moins.

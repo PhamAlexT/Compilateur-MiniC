@@ -1,0 +1,28 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Inconnu(e) </title></head><body>
+<h1 id="compilateur-minic">Compilateur-MiniC</h1>
+<p>Commande pour compiler:</p>
+<p><em>ocamlbuild -use-menhir main.native</em></p>
+<p>Commande pour éxecuter:
+<em>./main.native Exemple.c</em></p>
+<h2 id="comment-le-compilateur-fonctionne">Comment le compilateur fonctionne:</h2>
+<ul>
+<li>Premièrement, notre compilateur vérifie qu'un main est bien présent. Dans le cas où ce n'est pas le cas, une erreur est déclenchée.</li>
+<li>Les globales sont toutes chargés une à une.</li>
+<li>
+<p>Lorsqu'une fonction est analysée, nous analysons dans cet ordre:</p>
+<ul>
+<li>Les variables globales.</li>
+<li>Les paramètres.</li>
+<li>Les variables locales.</li>
+</ul>
+</li>
+<li>
+<p>Dans les 3 cas, nous n'acceptons pas de "doublons".
+    Par exemple la déclaration de 2 variables globales de même nom déclenche une erreur. </p>
+</li>
+<li>
+<p>Cependant, si une nouvelle type de valeur a le même nom qu'une valeur précédemment déclaré, cette dernière est masquée et un avertissement est écrit par le compilateur signalant le masquage.
+    Par exemple, une variable globale sera cachée si un fonction définit un paramètre de même nom.</p>
+</li>
+</ul>
+</body></html>

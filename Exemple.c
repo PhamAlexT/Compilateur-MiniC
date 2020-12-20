@@ -9,11 +9,9 @@ int fact(int n) {
   }
 }
 
-void dummy(){
-  int machin = 5;
+int dummy(){
+  int machin = 5 + test;
   bool truc = false;
-
-  int cavatoutcasser = PARAM * test;
 }
 
 int main(){

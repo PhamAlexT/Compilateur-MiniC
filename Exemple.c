@@ -13,17 +13,12 @@ int fact(int n)
   }
 }
 
-int dummy()
-{
-  int machin = 5 + test;
-  truc = machins;
+void testFact(){
+  truc = fact(test);
 }
 
-void jth()
-{
-  return chouette;
-}
 int main()
 {
+  int test = 5;
   return test;
 }

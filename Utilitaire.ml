@@ -23,5 +23,5 @@ let gapWord s1 s2 =
 ;;
 
 let isClose s1 s2 =
-  if ((gapWord s1 s2 ) < 25.0 ) then true else false
+  if ((gapWord s1 s2 ) < 25.0) && ( 0. < (gapWord s1 s2 ))  then true else false
 ;;

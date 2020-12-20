@@ -58,7 +58,21 @@ let rec analyseExpression expr (environnement: (string, membre_envir) Hashtbl.t 
       |None -> let message = Printf.sprintf "Identifiant non défini %s" nom in failwith message
       |Some(membre) -> match membre with
         |TypeVariable(_) -> let message = Printf.sprintf "La fonction est appelé comme une variable" in failwith message
-        |FunDef(fun_def) -> fun_def.SyntaxeAbstr.return) 
+        |FunDef(fun_def) -> 
+          let s1 = l in (*Liste des expressions d'appels: Paramètres concrets*)
+          let s2 = List.map (fun x -> snd x) fun_def.params in (* Types à respecter *)
+          match ((List.length s1) = (List.length s2)) with
+          |false -> let msg = (Printf.sprintf "Erreur: L'appel à la fonction %s n'a pas le bon nombre d'argument" nom) in failwith msg
+          |_-> 
+            let rec verification l1 l2 = 
+              match (l1,l2) with
+              |([],[]) -> fun_def.SyntaxeAbstr.return
+              |(h1::t1,h2::t2) -> (match (analyseExpression h1 environnement) = h2 with
+                  |false -> let msg = (Printf.sprintf "Un paramètre est mal typé pour l'appel à la fonction %s " nom ) in failwith msg
+                  |_-> verification t1 t2)
+              |_-> fun_def.SyntaxeAbstr.return
+            in
+            verification s1 s2)
   (* To do : Le return de même type? Nombre d'arguments?*)
   (*ds une operation: les comparaisons obligent des bool et pour les op arithmetiques: int*) 
   |Binop(op,e1,e2) -> (match op with
@@ -92,7 +106,6 @@ let rec analyseInstrs instrs (environnement: (string, membre_envir) Hashtbl.t ) 
         |Some(FunDef(_))-> let message = Printf.sprintf "Erreur: On affecte une valeur à une fonction" in failwith message
         |Some(TypeVariable(t))->t
       in
-      Printf.printf "--Ici: s de type %s \n" (typeToString typeS);
       if typeE != typeS 
       then let message = Printf.sprintf "Erreur: Affectation de type non identique." in failwith message 
       else typeS
@@ -217,7 +230,7 @@ let analyseFonction fun_definition infosFunction =
     |Int | Bool -> (match analyserNoReturn with 
         |true-> let message = Printf.sprintf "Erreur: La fonction %s ne retourne rien alors qu'elle doit." fun_definition.SyntaxeAbstr.name in failwith message
         |false -> if analyserReturn = false then let message = Printf.sprintf "Erreur: La fonction %s n'a pas un retour de type identique à son type" fun_definition.SyntaxeAbstr.name in failwith message)
-    | Void-> if analyserNoReturn = true then let message = Printf.sprintf "Erreur: La fonction %s qui est void return quelque chose." fun_definition.SyntaxeAbstr.name in failwith message
+    | Void-> if analyserNoReturn = false then let message = Printf.sprintf "Erreur: La fonction %s qui est void return quelque chose." fun_definition.SyntaxeAbstr.name in failwith message
   in
 
   ()

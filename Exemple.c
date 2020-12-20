@@ -1,4 +1,4 @@
-int PARAM = 5;
+int PARAM = 6;
 bool test = true;
 
 int fact(int n) {
@@ -9,11 +9,13 @@ int fact(int n) {
   }
 }
 
-void jeSuisUnDebutant(int p1, bool p2){
-  int test = 5;
-  int machin = 10 + 10;
+void dummy(){
+  int machin = 5;
+  bool truc = false;
+
+  int cavatoutcasser = PARAM * test;
 }
-  
-void main(){
+
+int main(){
   putchar(fact(PARAM));
 }

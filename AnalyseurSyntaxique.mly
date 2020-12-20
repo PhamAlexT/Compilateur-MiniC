@@ -22,7 +22,7 @@ open SyntaxeAbstr
 %left LT LEQ GT GEQ
 %left PLUS MINUS
 %left TIMES
-
+%nonassoc MINUS_U
 
 %start prog
 %type <SyntaxeAbstr.prog> prog
@@ -40,7 +40,7 @@ prog:
 | error
 		{ let pos = $startpos in
 			let message = Printf.sprintf
-				"échec à la position: %d, %d"
+				"ERREUR: Grammaire - Echec à la position: %d, %d"
 				pos.pos_lnum
 				(pos.pos_cnum - pos.pos_bol)
 			in
@@ -57,7 +57,7 @@ fun_def:
 | t = typesFonctions i = IDENT L_PAR ps = separated_list(COMMA,param) R_PAR 
 	L_ACC l = globals s = list(instr) R_ACC 
 	{
-		Printf.printf "Nom fonction: %s\n" i;{name=i;params=ps;return=t;locals=l; code = s}
+		{name=i;params=ps;return=t;locals=l; code = s}
 	} 
 ;
 
@@ -99,6 +99,8 @@ instr:
 | PUTCHAR L_PAR e=expr R_PAR ";"
 	{Putchar(e)}
 (*if*)
+| id=IDENT "=" e=expr ";"
+	{Set(id,e)}
 | IF "(" e1=expr ")" "{" seq1=list(instr) "}" ELSE "{" seq2=list(instr) "}"
 	{If(e1,seq1,seq2)}
 (*while*)

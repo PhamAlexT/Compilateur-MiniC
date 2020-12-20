@@ -35,12 +35,12 @@ Commande pour éxecuter:
 
 ### Suggestion
 Lorsqu'un nom de variable de fonction n'est pas reconnu, on essaye de voir dans l'environnement si un nom s'y rapproche en se basant sur ce critère:
-1. Pour un mot $m_1$, nous faisons la somme du code ASCII de chaque caractère du mot que l'on nomme $s_1$.
-2. De même pour un deuxième mot $m_2$ et $s_2$ et la somme défini de la même manière.
-3. Posons $gap = \dfrac{| s_1 - s_2 |}{ max(s_1,s_2)} \times 100$.
-4. Si $gap < 30%$, nous considérons que les mots sont suffisaments proche pour être suggéré.
+1. Pour un mot m1, nous faisons la somme du code ASCII de chaque caractère du mot que l'on nomme s1.
+2. De même pour un deuxième mot m2 et s2 et la somme défini de la même manière.
+3. Posons : ![formule](res/formule.png)
+4. Si gap < 30%, nous considérons que les mots sont suffisaments proche pour être suggéré.
 
-Posons alors pour le nom de variable $m_1$ et $m_2$ les autres noms de variables de l'environnement. Pour le cas ou $m_2 = m_1$ notre fonction qui juge renvoie faux.
+Posons alors pour le nom de variable m1 et m2 les autres noms de variables de l'environnement. Pour le cas ou m2 = m1 notre fonction qui juge renvoie faux.
 
 Une autre possibilité aurait été de baser notre système sur la [Distance de Levenshtein](https://fr.wikipedia.org/wiki/Distance_de_Levenshtein) qui est très pertinente ici car elle caractérise / quantifie assez bien les erreurs de programmation qui sont:
 * Inversion des positions de lettre.

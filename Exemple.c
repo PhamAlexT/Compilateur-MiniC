@@ -16,7 +16,7 @@ int fact(int n)
 int dummy()
 {
   int machin = 5 + test;
-  bool truc = false;
+  truc = machins;
 }
 
 void jth()

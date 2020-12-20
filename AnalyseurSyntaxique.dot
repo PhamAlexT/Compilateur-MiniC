@@ -1,7 +1,7 @@
 digraph G {
+size="8,6"; ratio=fill; node[fontsize=24];
 orientation = landscape;
 rankdir = LR;
-ratio = compress;
 nt0 [ label="prog'" ] ;
 nt1 [ label="separated_nonempty_list(COMMA,param)" ] ;
 nt2 [ label="separated_nonempty_list(COMMA,expr)" ] ;

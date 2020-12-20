@@ -15,8 +15,17 @@ let typeToString t =
   | Bool -> "Bool"
   | Void -> "Void"
 ;;
+let hashMapToList = fun hshtbl -> Hashtbl.fold (fun k v acc -> (k, v) :: acc) hshtbl [] ;;
 
-let hashMapToList = fun h -> Hashtbl.fold (fun k v acc -> (k, v) :: acc) h [] ;;
+let messageProposition nom environnement = 
+  let rec aux l = match l with
+    | [] -> let msg = Printf.sprintf "Identifiant %s non défini" nom in msg
+    | hd::tl -> (match Utilitaire.isClose nom (fst hd) with
+        |true-> let msg = Printf.sprintf "Identifiant %s non défini, voulez-vous dire %s" nom (fst hd) in msg
+        |false -> aux tl)
+  in
+  aux (hashMapToList environnement);
+;;
 (*fonction initialisant Hashtbl des variables globales*)
 let creaGlobales  l =
   let rec aux l = 
@@ -40,7 +49,7 @@ let rec analyseExpression expr (environnement: (string, membre_envir) Hashtbl.t 
   |Cst n -> Int
   (*verifier que la variable existe ds la Hashtbl*)   
   |Get i -> (match Hashtbl.find_opt environnement i with
-      |None -> let message = Printf.sprintf "Identifiant %s non défini" i in failwith message
+      |None -> let message = messageProposition i environnement in failwith message
       |Some(membre) -> match membre with
         |FunDef(_) -> let message = Printf.sprintf "Identifiant %s est une fonction mais appelé comme une variable." i in failwith message
         |TypeVariable(t) -> Printf.printf "Get de %s de type %s \n" i (typeToString t);t)

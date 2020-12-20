@@ -13,6 +13,7 @@ let typeToString t =
   match t with
   | Int -> "Int"
   | Bool -> "Bool"
+  | Void -> "Void"
 ;;
 
 let hashMapToList = fun h -> Hashtbl.fold (fun k v acc -> (k, v) :: acc) h [] ;;
@@ -42,15 +43,15 @@ let rec analyseExpression expr (environnement: (string, membre_envir) Hashtbl.t 
       |None -> let message = Printf.sprintf "Identifiant %s non défini" i in failwith message
       |Some(membre) -> match membre with
         |FunDef(_) -> let message = Printf.sprintf "Identifiant %s est une fonction mais appelé comme une variable." i in failwith message
-        |TypeVariable(t) -> t)
+        |TypeVariable(t) -> Printf.printf "Get de %s de type %s \n" i (typeToString t);t)
   (*verif pour call : nb param + type retour*)
   |Call (nom,l) -> (match Hashtbl.find_opt environnement nom with
       |None -> let message = Printf.sprintf "Identifiant non défini %s" nom in failwith message
       |Some(membre) -> match membre with
         |TypeVariable(_) -> let message = Printf.sprintf "La fonction est appelé comme une variable" in failwith message
         |FunDef(fun_def) -> fun_def.SyntaxeAbstr.return) 
-        (* To do : Le return de même type? Nombre d'arguments?*)
-        (*ds une operation: les comparaisons obligent des bool et pour les op arithmetiques: int*) 
+  (* To do : Le return de même type? Nombre d'arguments?*)
+  (*ds une operation: les comparaisons obligent des bool et pour les op arithmetiques: int*) 
   |Binop(op,e1,e2) -> (match op with
       |Lt | Gt | Leq | Geq ->( match (analyseExpression e1 environnement, analyseExpression e2 environnement) with
           |(Int,Int) -> Bool
@@ -73,19 +74,20 @@ let rec analyseInstrs instrs (environnement: (string, membre_envir) Hashtbl.t ) 
     (*expr simple: on lance l'analyse sur les expr*)
     | Expr e -> analyseExpression e environnement
     (*verifie que e est bien typee + type quelconque *)
-    |Putchar e -> Void
+    |Putchar e -> let _ = analyseExpression e environnement in Void
     (*verifier que s existe et que s et e soit de meme type*)
-    |Set(s,e) ->( 
-        let typeE = analyseExpression e environnement in Printf.printf "--Ici: expr de type %s" (typeToString typeE);
-        let typeS = match Hashtbl.find environnement s with
-          |FunDef(_)-> let message = Printf.sprintf "Erreur: On affecte une valeur à une fonction" in failwith message
-          |TypeVariable(t)->t
-        in
-        Printf.printf "--Ici: s de type %s" (typeToString typeS);
-        if typeE != typeS 
-        then let message = Printf.sprintf "Erreur: Affectation de type non identique." in failwith message 
-        else typeS
-      )
+    |Set(s,e) ->
+      let typeE = analyseExpression e environnement in Printf.printf "--Ici: expr de type %s" (typeToString typeE);
+      let typeS = match Hashtbl.find_opt environnement s with
+        |None->let message =  Printf.sprintf "Erreur: L'identifiant %s n'existe pas pour l'affectation." s; in failwith message;
+        |Some(FunDef(_))-> let message = Printf.sprintf "Erreur: On affecte une valeur à une fonction" in failwith message
+        |Some(TypeVariable(t))->t
+      in
+      Printf.printf "--Ici: s de type %s \n" (typeToString typeS);
+      if typeE != typeS 
+      then let message = Printf.sprintf "Erreur: Affectation de type non identique." in failwith message 
+      else typeS
+
     (*pour if: il suffit de verifier seulement que la condition est un bool*)
     |If(condition,s1,s2) -> (match (analyseExpression condition environnement),s1,s2 with
         |(Bool,s1,s2) -> let _ = analyseInstrs s1 environnement in 
@@ -107,7 +109,7 @@ let addHashtbl htb1 htb2=
     |[]-> ()
     |(i,t)::tl -> match Hashtbl.find_opt htb1 i with
       |None-> Hashtbl.add htb1 i t;aux tl
-      |_-> Printf.printf "Masquage: %s" i; Hashtbl.add htb1 i t;aux tl
+      |_-> Printf.printf "Masquage: %s\n" i; Hashtbl.add htb1 i t;aux tl
   in
   aux (hashMapToList htb2)
 ;;
@@ -135,25 +137,29 @@ let analyseFonction fun_definition infosFunction =
   let rec hashPara l = match l with 
     | [] -> ()
     | (i,t)::tl -> match Hashtbl.find_opt parametres i with
-      |None -> Printf.printf "Test: %s de type %s \n:" i (typeToString t) ; Hashtbl.add parametres i (TypeVariable t); hashPara tl
+      |None -> Hashtbl.add parametres i (TypeVariable t); hashPara tl
       |_-> let message = Printf.sprintf "Le parametre %s a été défini 2 fois." i in failwith message
 
   in
+  Printf.printf "\t Size env: %d \n" (Hashtbl.length environnement);
+  Printf.printf "\t Size params: %d\n" (List.length fun_definition.SyntaxeAbstr.params);
   hashPara fun_definition.SyntaxeAbstr.params;
   addHashtbl environnement parametres;
 
+  Printf.printf "Size env: %d\n" (Hashtbl.length environnement);
   (*3. cas des variables locales a la fonction *)
   let locales = Hashtbl.create 4 in
   let rec hashLocal l =
     match l with 
     | [] -> ()
     | (i,t)::tl -> match Hashtbl.find_opt locales i with 
-      |None -> Hashtbl.add locales i (TypeVariable t); hashLocal tl
+      |None -> Printf.printf "Test: %s de type %s \n" i (typeToString t) ; Hashtbl.add locales i (TypeVariable t); hashLocal tl
       |_-> let message = Printf.sprintf "La variable locale %s a été défini 2 fois." i in failwith message
   in
   hashLocal fun_definition.SyntaxeAbstr.locals;
   addHashtbl environnement locales;
-
+  Printf.printf "\t Size locals: %d\n" (List.length fun_definition.SyntaxeAbstr.locals);
+  Printf.printf "\t Size env: %d \n" (Hashtbl.length environnement);
   (* Inclure les fonctions déjà défini dans l'environnement *)
   let hashFD =
     let rec auxiliaire l = match l with
@@ -163,14 +169,48 @@ let analyseFonction fun_definition infosFunction =
     auxiliaire (hashMapToList infosFunction)
   in
   hashFD;
-
-  (*La fonction se connait elle même pour la récursivité*)
-  Hashtbl.add environnement (fun_definition.SyntaxeAbstr.name) (FunDef fun_definition) ;
+  Printf.printf "\t Nb d'instr: %d \n" (List.length fun_definition.SyntaxeAbstr.code);
 
   (* On teste le typage sur toutes les instructions *)
   let _ = analyseInstrs fun_definition.SyntaxeAbstr.code environnement in
 
   (* TODO : Vérifier que TOUT  les return sont du même type que la fonction *)
+  let analyserReturn = 
+    let rec aux l =
+      match l with
+      |[] ->true
+      |hd::tl -> match hd with
+        |If(c,e1,e2) -> Printf.printf "Je suis dedans! \n"; (aux e1) || (aux e2)
+        |While(c,e) -> aux e
+        |Return(e) -> if fun_definition.SyntaxeAbstr.return != (analyseExpression e environnement)
+          then false else aux tl
+        | _ -> aux tl
+    in
+    aux fun_definition.SyntaxeAbstr.code
+  in
+
+  let analyserNoReturn =
+    let rec aux l = 
+      match l with
+      |[]->true
+      |hd::tl -> (match hd with
+          |Return(e)->false
+          | If(c,e1,e2) -> (aux e1) || (aux e2)
+          |While(c,e) -> aux e
+          |_->aux tl)
+    in
+    aux fun_definition.SyntaxeAbstr.code
+  in
+
+
+
+  let _ = match fun_definition.SyntaxeAbstr.return with
+    |Int | Bool -> (match analyserNoReturn with 
+        |true-> let message = Printf.sprintf "Erreur: La fonction %s ne retourne rien alors qu'elle doit." fun_definition.SyntaxeAbstr.name in failwith message
+        |false -> if analyserReturn = false then let message = Printf.sprintf "Erreur: La fonction %s n'a pas un retour de type identique à son type" fun_definition.SyntaxeAbstr.name in failwith message)
+    | Void-> if analyserNoReturn = true then let message = Printf.sprintf "Erreur: La fonction %s qui est void return quelque chose." fun_definition.SyntaxeAbstr.name in failwith message
+  in
+
   ()
 ;;
 
@@ -197,9 +237,9 @@ let analysesFonction l=
 (*Fonction principal du verificateur de type: celle qu'on appelle ds le main*)
 let analyseProgramme prog =
   presenceMain (List.rev prog.functions);
-  creaGlobales (List.rev prog.globals);
+  creaGlobales (prog.globals);
 
-  analysesFonction (List.rev prog.functions);
+  analysesFonction (prog.functions);
   Printf.printf "L'analyse de typage est terminée.\n"
 
 ;;

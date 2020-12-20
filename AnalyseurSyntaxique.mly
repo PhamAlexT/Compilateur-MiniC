@@ -83,18 +83,15 @@ expr:
 (*Opération binaire*)
 | e1=expr op=binop e2=expr
 	{Binop(op,e1,e2)}
-(*appel fonction *)
-| id=IDENT "(" e = separated_list(COMMA,expr) ")"  (* pour un appel de fonctions : essai (a, b+c) : identifiant + plusieurs expr qu'on veut mettre en liste chaque expr est separe par une virgule*)								 
-	{Call(id,e)} 
 (* acces variable *)
 | id=IDENT
 	{Get(id)}
+(*appel fonction *)
+| id=IDENT "(" e = separated_list(COMMA,expr) ")"  (* pour un appel de fonctions : essai (a, b+c) : identifiant + plusieurs expr qu'on veut mettre en liste chaque expr est separe par une virgule*)								 
+	{Call(id,e)} 
 ;
 
 instr:
-(*expression simple*)
-| e=expr
-	{Expr e}
 (*affichage*)
 | PUTCHAR L_PAR e=expr R_PAR ";"
 	{Putchar(e)}
@@ -109,6 +106,9 @@ instr:
 (*return*)
 | RETURN e=expr ";"
 	{Return e}
+(*expression simple*)
+| e=expr
+	{Expr e}
 ;
 
 %inline binop:

@@ -1,5 +1,6 @@
 int PARAM = 5;
 bool test = true;
+
 int fact(int n) {
   if (n < 2) {
     return 1;

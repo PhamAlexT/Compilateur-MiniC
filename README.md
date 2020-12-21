@@ -109,7 +109,7 @@ Une tentative d'affichage sur Console a été fait et est disponible sous le nom
  Pour cette partie, on récupère les résultats de la partie d'analyse de typage.
  On récupère les variables globales et toutes les fonctions définies et on essaye de tracer un arbre en utilisant le plus possible un arbre. Notre meilleur résultat est (sur le fichier test *testSoft.c*.):
  
- ![ArbreAbstrait](res/ArbreAbstr.png) 
+ ![ArbreAbstrait](res/ArbreAbstrait.png) 
 
 
 Ce fichier est obtenu en utilisant *graphviz* et la commande *dot -Tpng ArbreSyntaxeAbstr.dot -o ArbreAbstr.png*.

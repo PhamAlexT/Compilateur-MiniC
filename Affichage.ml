@@ -1,12 +1,13 @@
-open SyntaxeAbstr
 open Printf
+open SyntaxeAbstr
+let hashMapToList = fun hshtbl -> Hashtbl.fold (fun k v acc -> (k, v) :: acc) hshtbl [] ;;
+let nameFile = "ArbreSyntaxeAbstr.dot";;
 
-(*aide affichage*)
-let typeToString t = 
-  match t with
-  | Int -> "INT"
-  | Bool -> "BOOL"
-  | Void -> "VOID"
+let prepFichier file = 
+  fprintf file "digraph G {
+    node [shape=box];
+    ratio = fill;
+    nt0 [ label=\"prog\" ]; \n"
 ;;
 
 let opToString t = 
@@ -21,67 +22,88 @@ let opToString t =
 ;;
 
 
-let rec afficheGlo gg =
-	match gg with 
-	| [] -> printf "\n"
-	| (nom,t)::tl -> printf "%s %s \n" (typeToString t) nom; afficheGlo tl         
+let drawGlobal file global indiceLabel=
+  fprintf file "nt%i [label=\" %s \"]\n nt1 -> nt%i [ label=\"\" ];\n" (indiceLabel) global (indiceLabel);;
 ;;
 
-let rec affichePara para = 
-	match para with 
-	| [] -> printf ") {\n"
-	| (nom,t)::tl -> printf "%s %s " (typeToString t) nom; affichePara tl 
+let drawGlobals file globals indiceLabel = 
+  if List.length globals = 0 then ()
+  else
+    (fprintf file "nt0 -> nt1 [ label=\"\" ];\n"; fprintf file "nt1 [label= \" GLOBALS \"];\n");
+  let rec aux l indiceLabel= match l with
+    |[]->()
+    | hd::tl -> drawGlobal file hd (indiceLabel+1); aux tl (indiceLabel+1)
+  in
+  aux globals indiceLabel;
 ;;
 
-let rec afficheLocal para = 
-	match para with 
-	| [] -> printf "\n"
-      	| (nom,t)::tl -> printf "\t %s %s \n" (typeToString t) nom; afficheLocal tl 
+let listOfFun file l indiceLabel typeL = 
+  if List.length l = 0 then 0
+  else 
+    let rec aux l acc = match l with
+      |[]->()
+      |hd :: tl -> 
+        fprintf file "nt%d [label= \" %s : %s \"];\n" (indiceLabel+acc) typeL hd; aux tl (acc+1) (* Tracé du courant*);
+
+    in
+    aux l 0;
+    List.length l
 ;;
 
-(*Affichage expr*)
-let rec afficheExpr expr =
-	match expr with 
-	|Cst n -> printf "CST %d " n;
-	|Get i -> printf "%s " i;
-	|Call (nom,l) -> printf "CST  "; (*afaire*)
-	|Binop(op,e1,e2) -> printf "e1 "; printf "%s " (opToString op) ; printf " e2"; (*a faire*)
-	|Not(e) -> printf "no "; afficheExpr e 
-  
-;;
-	
-(*Affichage instr*)
-let rec afficheInstr instr=
-	match instr with 
-	| Putchar(e) -> printf "PUTCHAR e" ; printf "=>  ("; afficheExpr e ; printf ")";
-	| _ -> printf "CST  "; (* afaire*)
-	
+(* Dessinne et retourne le nombre de noeuds nécessaire *)
+(* TODO: Relier...?*)
+let toNodeExp file e indiceCourant = 
+  let rec aux exp indiceEcrire = match e with 
+    | Cst (n) -> fprintf file "nt%d [label = \" %d \"]" indiceCourant n;1
+    | Get(i) -> fprintf file "nt%d [label = \" %s \"]" indiceCourant i; 1
+    | Binop(op,e1,e2) -> fprintf file "nt%d [label = \" %s \"]" indiceCourant (opToString op); let d1 = aux e1 indiceCourant in 
+      let d2 = aux e2 (indiceCourant+d1) in d1+d2
+    | Call(i,le) -> 10
+    | Not(e) -> fprintf file "nt%d [label = \" Non \"]" indiceCourant; aux e 1
+    | _-> 10
+  in
+  aux e indiceCourant
 ;;
 
-
-let rec afficheSeq seq=
-	match seq with 
-	| [] -> printf "\n"
-	| hd::tl -> afficheInstr hd; afficheSeq tl;
+(* Retourne le nb de noeuds nécessaire pour la suite? *)
+let drawFunction file f indiceLabel=
+  fprintf file  "nt%i [label= \" %s \"];\n" indiceLabel f.SyntaxeAbstr.name;
+  let locals = List.map (fun x -> fst x) f.SyntaxeAbstr.locals in
+  let params = List.map (fun x -> fst x) f.SyntaxeAbstr.params in
+  let nbParams = listOfFun file params (1+indiceLabel) "Params" in
+  let nbLocals = listOfFun file locals (1+indiceLabel+nbParams) "Locales" in
+  (* Relions *)
+  nbLocals+nbParams
 ;;
 
-(*cas fun_def*)
-let rec afficheUneFun ff = 
-	printf "%s %s ( " (typeToString ff.return) ff.name; 
-	affichePara ff.params;
-	afficheLocal ff.locals;				
-	afficheSeq ff.code;
-	printf "}";
+let drawFunctions file listF indiceLabel =
+  match (List.length listF) with
+  |0->Printf.printf "On est à 0 \n";()
+  |_-> let _ = 
+         (fprintf file "nt0 -> nt%d  [ label=\"\" ];\n" indiceLabel ;fprintf file "nt%d [label=\"FONCTIONS \"];\n" indiceLabel) in
+    let rec aux file l decalage = 
+      match l with
+      |[]->100;
+      |hd::tl -> fprintf file "nt%d ->nt%d [ label=\"\" ];\n" indiceLabel (indiceLabel+decalage); let offset = drawFunction file hd (indiceLabel+decalage) in aux file tl (indiceLabel+decalage+offset);
+    in let _ = aux file listF 1 in
+    ()
 ;;
+let getDot couplet =
+  (* Récupération des noms de variables*)
+  let globals = List.map (fun x -> fst x) (hashMapToList (fst couplet)) in
+  (* Récupération des définitions de fonctions*)
+  let defsFun = List.map (fun x->snd x) (hashMapToList (snd couplet)) in
+  let file = open_out nameFile in
+  (* Ecrire ...*)
+  prepFichier file;
 
-let affichageArbre prog =
-	(*cas variables globales*)
-	afficheGlo prog.globals; 
-	
-	let rec afficheFun listFun = 
-		match listFun with 
-		| [] -> printf "\n"
-	        | hd::tl -> afficheUneFun hd; printf "\n\n"; afficheFun tl
-	in
-	afficheFun prog.functions;
+  (* Dessin des globales *)
+  drawGlobals file globals 1;
+  (* Dessin des fonctions *)
+  drawFunctions file defsFun (2+(List.length globals));
+
+  (* Fin,*)
+  fprintf file "}";
+  close_out file;
 ;;
+let _ = getDot;;

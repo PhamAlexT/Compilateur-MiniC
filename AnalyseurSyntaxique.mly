@@ -35,7 +35,7 @@ open SyntaxeAbstr
 prog:
 | gl=globals fs=list(fun_def) EOF 
 	{
-	{globals=gl;functions=fs}
+	{globals=List.rev gl;functions=fs}
 	}
 	 
 | error
@@ -69,11 +69,14 @@ globals:
 (*valeur globales d'un programme *)
 global:
 (*cas sans value : initialise un int a 0 et un bool a false*)
+| t = typesVar i = IDENT "=" e = expr ";" {(i,t)}
+| t = typesVar i = IDENT ";" {(i,t)}
+(*
 | INT i=IDENT SEMICOLON {Printf.printf "global int sans valeur\n" ;(i,Int)}
 | BOOL i=IDENT SEMICOLON {Printf.printf "global false\n"; (i,Bool)}
 (*cas avec valeur*)
 | INT i=IDENT "="  expr SEMICOLON {(i,Int)}
-| BOOL i=IDENT "=" expr  SEMICOLON {(i,Bool)}
+| BOOL i=IDENT "=" expr  SEMICOLON {(i,Bool)} *)
 ;
 
 expr:

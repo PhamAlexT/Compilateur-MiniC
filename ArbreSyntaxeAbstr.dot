@@ -1,0 +1,19 @@
+digraph G {
+    node [shape=box];
+    ratio = fill;
+    nt0 [ label="prog" ]; 
+nt0 -> nt1 [ label="" ];
+nt1 [label= " GLOBALS "];
+nt2 [label=" machin "]
+ nt1 -> nt2 [ label="" ];
+nt3 [label=" PARAM "]
+ nt1 -> nt3 [ label="" ];
+nt0 -> nt4  [ label="" ];
+nt4 [label="FONCTIONS "];
+nt4 ->nt5 [ label="" ];
+nt5 [label= " fact "];
+nt6 [label= " Params : n "];
+nt4 ->nt10 [ label="" ];
+nt10 [label= " main "];
+nt11 [label= " Locales : test "];
+}

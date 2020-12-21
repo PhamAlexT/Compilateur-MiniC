@@ -284,7 +284,7 @@ let analysesFonction l=
   let fonctionDef = Hashtbl.create 4 in (* Fonction déjà vu pour la fonction courante*)
   let rec aux l = 
     match l with 
-    |[] -> printf "Les fonctions sont bien définis.\n"
+    |[] -> printf "Les fonctions sont bien définis.\n";fonctionDef
     |hd::tl-> printf "\t Fonction analysée: %s  \n" hd.SyntaxeAbstr.name ; analyseFonction hd fonctionDef;aux tl
   in
   aux l;
@@ -294,8 +294,9 @@ let analysesFonction l=
 let analyseProgramme prog =
   presenceMain (List.rev prog.functions);
   creaGlobales (prog.globals);
-
-  analysesFonction (prog.functions);
-  printf "L'analyse de typage est terminée.\n\n"
+  
+  let infoFs = analysesFonction (prog.functions) in 
+  printf "L'analyse de typage est terminée.\n\n";
+  (varGlobales,infoFs)
 
 ;;

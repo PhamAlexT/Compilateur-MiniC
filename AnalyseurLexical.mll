@@ -97,7 +97,7 @@ let lexbuf = Lexing.from_channel(open_in Sys.argv.(1))
 let rec loop () =
   let t = token lexbuf in
   if t <> EOF
-  then begin print_token t; loop () end
+  then begin loop () end
 
 let _ =
   loop ()

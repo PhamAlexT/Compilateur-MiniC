@@ -1,4 +1,5 @@
 let () =
+  Printf.printf "-------------------DEBUT PROG----------------- \n\n";
   let fichier = Sys.argv.(1) in
   let c = open_in fichier in
   let lexbuf = Lexing.from_channel c in
@@ -8,4 +9,4 @@ let () =
   let _ = AnalyseurTypage.analyseProgramme prog in
   ignore(prog);
   close_in c;
-  Printf.printf "Fin \n";
+  Printf.printf "-------------------FIN PROG----------------- \n";

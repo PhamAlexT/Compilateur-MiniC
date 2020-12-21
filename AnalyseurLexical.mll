@@ -87,7 +87,7 @@ rule token = parse
                       | '!' {NOT}
                       | _ as c {	failwith	(sprintf "ERREUR: Caractère illégale : %c Position : Ligne %i, Colonne %i, " c !line !col )}
                       |eof { EOF}
-{
+(*{
 let lexbuf = Lexing.from_channel(open_in Sys.argv.(1))
 
 let rec loop () =
@@ -97,4 +97,4 @@ let rec loop () =
 
 let _ =
   loop ()
-}
+}*)

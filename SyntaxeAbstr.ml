@@ -11,12 +11,14 @@ type binop=
     |Gt
     |Leq
     |Geq
+    
 type expr =
     | Cst  of int
     | Binop  of binop * expr * expr
     | Get  of string
     | Call of string * expr list
     | Not of expr
+    
 type instr =
     | Putchar of expr
     | Set     of string * expr
@@ -33,7 +35,6 @@ type fun_def = {
     locals: (string * typ) list;
     code:   seq;
 }
-
 
 type prog = {
     globals:   (string * typ) list;

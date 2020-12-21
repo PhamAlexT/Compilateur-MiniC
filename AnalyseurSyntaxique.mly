@@ -89,8 +89,9 @@ expr:
 | id=IDENT
 	{Get(id)}
 (*appel fonction *)
-| id=IDENT "(" e = separated_list(COMMA,expr) ")"  (* pour un appel de fonctions : essai (a, b+c) : identifiant + plusieurs expr qu'on veut mettre en liste chaque expr est separe par une virgule*)								 
+| id=IDENT "(" e = separated_list(COMMA,expr) ")" 								 
 	{Call(id,e)}
+(*negation*)
 | "!" e = expr
 	{Not(e)}
 ;

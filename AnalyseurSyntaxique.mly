@@ -21,9 +21,9 @@ open SyntaxeAbstr
 %token EOF
 
 %left LT LEQ GT GEQ EQ NEQ
-%left PLUS MINUS
-%left TIMES
-
+%left PLUS  MINUS
+%left TIMES IDENT
+%left L_PAR
 %nonassoc NOT
 %start prog
 %type <SyntaxeAbstr.prog> prog
@@ -53,10 +53,11 @@ param:
 | t = typesVar i=IDENT {i,t}
 ;
 
+;
 (*regle pour les fonctions : types + identifiant  + ( + parametre + ) + { + sequence + } *)
 fun_def:
 | t = typesFonctions i = IDENT L_PAR ps = separated_list(COMMA,param) R_PAR 
-	L_ACC l = globals s = list(instr) R_ACC 
+	L_ACC l =globals s = list(instr) R_ACC 
 	{
 		{name=i;params=ps;return=t;locals=l; code = s}
 	} 

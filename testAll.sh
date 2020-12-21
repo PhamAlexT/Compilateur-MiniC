@@ -1,0 +1,12 @@
+./main.native Test/deuxFonctions.c
+./main.native Test/deuxGlobales.c
+./main.native Test/mauvaisNbParamAppelFonction.c
+./main.native Test/mauvaisParamAppelFonction.c
+./main.native Test/nomproches.c
+./main.native Test/prog.c
+./main.native Test/testAff.c
+./main.native Test/TestNegation.c
+./main.native Test/testSoft.c
+./main.native Test/testU.c
+./main.native Test/varglobales.c
+./main.native Test/varPasDef.c

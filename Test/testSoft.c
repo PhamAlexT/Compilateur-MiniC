@@ -1,6 +1,6 @@
-int PARAM = 6;
-bool PARAM = true;
-int test = 0;
+int PARAM = 5;
+int machin = 3;
+
 int fact(int n)
 {
   if (n < 2)
@@ -13,8 +13,9 @@ int fact(int n)
   }
 }
 
-
-int main()
+void main()
 {
-  return test;
+  int test = 2 + 3;
+  test = 4 +3 ;
+  putchar(fact(PARAM));
 }

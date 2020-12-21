@@ -13,6 +13,9 @@ Commande pour compiler:
 Commande pour éxecuter:
 *./main.native Exemple.c*
 
+Pour lancer tout les tests disponibles:
+*sh testAll.sh*
+
 ## Comment le compilateur fonctionne:
 * Une analyse lexicale est réalisée.
 * Une analyse syntaxique est réalisée. Voici l'arbre de la grammaire que menhir génère (à l'aide de l'option --graph) : ![arbre](res/ArbreDuLangage.png)
@@ -35,6 +38,7 @@ Commande pour éxecuter:
 
 ## Ce qui a été implémenté:
 * L'analyseur de type peut suggérer des noms de variables ou de fonctions si elles sont jugées pertinentes. Nous en discuterons plus loin de comment il fonctionne et ce qui pouvait être fait.
+* Les opérations binaire et l'opération de négation. Pour cette partie, une factorisation dans la grammaire abstraite a été faite en réunissant toutes les opérations binaires.
 
 
 ## Remarques
@@ -93,3 +97,18 @@ prog: BOOL IDENT AFF TRUE WHILE
  * L'utiliser dans l'analyseur lexical et syntaxique. C'est cette étape que nous trouvons compliqué.
 
  Il y aura peut être une branche disponible pour montrer ce qui a été fait ici.
+
+ ### Début d'affichage.
+ Cette partie ne se déroule que si toute les analyses présentes ont eu aucun échec.
+Une tentative d'affichage sur Console a été fait et est disponible sous le nom de *Affichage2.ml* mais la partie utilisé est sur *Affichage.ml*
+
+ Pour cette partie, on récupère les résultats de la partie d'analyse de typage.
+ On récupère les variables globales et toutes les fonctions définis et on essaye de tracer un arbre en utilisant le plus possible un arbre. Notre meilleur résultat est ![ArbreAbstrait](res/ArbreAbstr.png) sur le fichier test *testSoft.c*.
+
+Ce fichier est obtenu en utilisant *graphviz* et la commande *dot -Tpng ArbreSyntaxeAbstr.dot -o ArbreAbstr.png*.
+Le plus dur est:
+* De ne pas s'emmêler sur la gestion des indices.
+* Le faire de la manière le plus récursive possible tout en faisant attention aux indices.
+* Nous avons réalisé plus tard  que nous étions pas obligés d'utiliser des numéros pour identifier les labels...
+Si *graphviz* est installé, lancer *sh Draw.sh* compile le programme, le lance et génère un png de l'arbre.
+L'idée de faire un arbre de cette manière nous vient du fait que *menhir* génère un graph de cette manière que ca nous semblait intéressant.

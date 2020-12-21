@@ -19,12 +19,15 @@ open SyntaxeAbstr
 %token PUTCHAR
 %token RETURN
 %token EOF
+%token MINUS_U
 
 %left LT LEQ GT GEQ EQ NEQ
 %left PLUS  MINUS
 %left TIMES IDENT
-%left L_PAR
+%nonassoc MINUS_U
 %nonassoc NOT
+%left L_PAR
+
 %start prog
 %type <SyntaxeAbstr.prog> prog
 
@@ -97,10 +100,10 @@ expr:
 (*appel fonction *)
 | id=IDENT "(" e = separated_list(COMMA,expr) ")"						 
 	{Call(id,e)}
-(*negation*)
+(*Negation*)
 | "!" e = expr
 	{Not(e)}
-| "-" e = expr {Binop(Mul,e,Cst (-1))}
+| "-" e = expr {Binop(Mul,e,Cst (-1))} %prec MINUS_U
 ;
 
 instr:

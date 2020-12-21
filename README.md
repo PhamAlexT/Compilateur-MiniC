@@ -103,7 +103,9 @@ prog: BOOL IDENT AFF TRUE WHILE
 Une tentative d'affichage sur Console a été fait et est disponible sous le nom de *Affichage2.ml* mais la partie utilisé est sur *Affichage.ml*
 
  Pour cette partie, on récupère les résultats de la partie d'analyse de typage.
- On récupère les variables globales et toutes les fonctions définis et on essaye de tracer un arbre en utilisant le plus possible un arbre. Notre meilleur résultat est ![ArbreAbstrait](res/ArbreAbstr.png) sur le fichier test *testSoft.c*.
+ On récupère les variables globales et toutes les fonctions définis et on essaye de tracer un arbre en utilisant le plus possible un arbre. Notre meilleur résultat est:
+ 
+ ![ArbreAbstrait](res/ArbreAbstr.png) sur le fichier test *testSoft.c*.
 
 Ce fichier est obtenu en utilisant *graphviz* et la commande *dot -Tpng ArbreSyntaxeAbstr.dot -o ArbreAbstr.png*.
 Le plus dur est:

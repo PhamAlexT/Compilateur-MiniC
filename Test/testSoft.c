@@ -12,7 +12,9 @@ int fact(int n)
     return n * fact(n + -1);
   }
 }
-
+int addition(int a, int b){
+  return a + b;
+}
 void main()
 {
   int test = 2 + 3;

@@ -15,7 +15,13 @@ nt5 [label= " fact "];
 nt6 [label= " Params : n "];
 nt5 -> nt6 [ label = " " ];
 nt4 ->nt10 [ label="" ];
-nt10 [label= " main "];
-nt11 [label= " Locales : test "];
+nt10 [label= " addition "];
+nt11 [label= " Params : a "];
+nt12 [label= " Params : b "];
+nt10 -> nt12 [ label = " " ];
 nt10 -> nt11 [ label = " " ];
+nt4 ->nt16 [ label="" ];
+nt16 [label= " main "];
+nt17 [label= " Locales : test "];
+nt16 -> nt17 [ label = " " ];
 }

@@ -39,6 +39,8 @@ let print_token = function
   | GT -> printf "GREATER THAN\n"
   | GEQ -> printf "GEQ \n"
   | LEQ -> printf "LEQ \n"
+  | EQ -> printf "EQUAL\n"
+  | NEQ -> printf "NEQ\n"
   | COMMA -> printf "COMMA \n"
   | SEMICOLON -> printf "SEMICOLON\n"
   | INT -> printf "INT\n"
@@ -68,8 +70,10 @@ let ident = (alpha) (alpha | ['0'-'9'] | '_')*
 rule token = parse
                       | ' '    { space(); token lexbuf }
                       | '\n'   { newline(); new_line lexbuf;token lexbuf }
-                      | digit+ as s { CONST (int_of_string s) }
+                      | '-'?digit+ as s { CONST (int_of_string s) }
                       | ident as s { keyword_or_ident s}
+                      | "==" {EQ}
+                      | "!=" {NEQ}
                       | '='   { AFF }
                       | '+'    { PLUS }
                       | '-' {MINUS}
@@ -87,7 +91,7 @@ rule token = parse
                       | '!' {NOT}
                       | _ as c {	failwith	(sprintf "ERREUR: Caractère illégale : %c Position : Ligne %i, Colonne %i, " c !line !col )}
                       |eof { EOF}
-(*{
+{
 let lexbuf = Lexing.from_channel(open_in Sys.argv.(1))
 
 let rec loop () =
@@ -97,4 +101,4 @@ let rec loop () =
 
 let _ =
   loop ()
-}*)
+}

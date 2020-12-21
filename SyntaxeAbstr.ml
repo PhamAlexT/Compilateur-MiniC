@@ -11,7 +11,8 @@ type binop=
     |Gt
     |Leq
     |Geq
-    
+    |Eq
+    |Neq
 type expr =
     | Cst  of int
     | Binop  of binop * expr * expr

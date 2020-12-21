@@ -85,14 +85,19 @@ let rec analyseExpression expr (environnement: (string, membre_envir) Hashtbl.t 
           |(Int,Int) -> Bool
           |_-> failwith "Erreur: Les opérateurs de comparaison n'opèrent pas sur des int seulement."
         )
-
+      | Eq | Neq -> (let t1 = analyseExpression e1 environnement in
+                     let t2 = analyseExpression e2 environnement in
+                     match (t1,t2) with
+                     |(Int,Int) -> Bool
+                     |(Bool,Bool) -> Bool
+                     |_->failwith "Opération logique mal typés")
       |_ -> let t1 = analyseExpression e1 environnement in
         let t2 = analyseExpression e2 environnement in
         match (t1,t2) with
         |(Int,Int) -> Int
         |_->failwith "Opération arithmétiques mal typés"
     )
-   (* Negation de val boolenne*)
+  (* Negation de val boolenne*)
   |Not(e) -> match (analyseExpression e environnement) with
     |Bool -> Bool
     |_-> let msg = (sprintf "Une négation a été mis devant une expression non booléenne " ) in failwith msg
@@ -153,7 +158,7 @@ let analyseFonction fun_definition infosFunction =
   else (Hashtbl.add infosFunction fun_definition.SyntaxeAbstr.name fun_definition);
 
   (*Cree environment et ajout var globales*)
-   (*printf "Variables globales : "; *)
+  (*printf "Variables globales : "; *)
   let environnement : (string, membre_envir) Hashtbl.t = Hashtbl.create 4 in
   let putGlobalInEnv =
     let rec aux l =
@@ -175,7 +180,7 @@ let analyseFonction fun_definition infosFunction =
 
   in
   (*printf "\t Size env: %d \n" (Hashtbl.length environnement);
-  printf "\t Size params: %d\n" (List.length fun_definition.SyntaxeAbstr.params);*)
+    printf "\t Size params: %d\n" (List.length fun_definition.SyntaxeAbstr.params);*)
   hashPara fun_definition.SyntaxeAbstr.params;
   (*ajout ds l'environnement*)
   addHashtbl environnement parametres;
@@ -193,9 +198,9 @@ let analyseFonction fun_definition infosFunction =
   hashLocal fun_definition.SyntaxeAbstr.locals;
   (*ajout ds environnement*)
   addHashtbl environnement locales;
- (* printf "\t Size locals: %d\n" (List.length fun_definition.SyntaxeAbstr.locals);
-  printf "\t Size env: %d \n" (Hashtbl.length environnement); *)
-  
+  (* printf "\t Size locals: %d\n" (List.length fun_definition.SyntaxeAbstr.locals);
+     printf "\t Size env: %d \n" (Hashtbl.length environnement); *)
+
   (* Inclure les fonctions déjà défini dans l'environnement *)
   let hashFD =
     let rec auxiliaire l = match l with
@@ -205,24 +210,24 @@ let analyseFonction fun_definition infosFunction =
     auxiliaire (hashMapToList infosFunction)
   in
   hashFD;
-  
-  
- (* printf "Nb d'instr dans la fonction %s : %d \n"  fun_definition.SyntaxeAbstr.name (List.length fun_definition.SyntaxeAbstr.code);*)
- 
+
+
+  (* printf "Nb d'instr dans la fonction %s : %d \n"  fun_definition.SyntaxeAbstr.name (List.length fun_definition.SyntaxeAbstr.code);*)
+
   printf "Informations environnement relatif à cette fonction :\n";
   (*printf "Size env: %d \n" (Hashtbl.length environnement);*)
   let affichage =
     let rec aux hash =
-       match hash with 
-        | [] -> ()
-        | (nom, infos)::tl -> ( match infos with 
-        			 | FunDef(t) -> printf "%s est une fonction de type %s \n" nom (typeToString t.SyntaxeAbstr.return);
-  				 | TypeVariable(t) -> printf "%s est une variable de type %s \n" nom (typeToString t) ); aux tl;
-        
-   in
-  aux (hashMapToList environnement) in 
+      match hash with 
+      | [] -> ()
+      | (nom, infos)::tl -> ( match infos with 
+          | FunDef(t) -> printf "%s est une fonction de type %s \n" nom (typeToString t.SyntaxeAbstr.return);
+          | TypeVariable(t) -> printf "%s est une variable de type %s \n" nom (typeToString t) ); aux tl;
+
+    in
+    aux (hashMapToList environnement) in 
   affichage;
-  
+
   (* On teste le typage sur toutes les instructions *)
   let _ = analyseInstrs fun_definition.SyntaxeAbstr.code environnement in
 
@@ -253,7 +258,7 @@ let analyseFonction fun_definition infosFunction =
     in
     aux fun_definition.SyntaxeAbstr.code
   in
-  
+
 
 
   let _ = match fun_definition.SyntaxeAbstr.return with

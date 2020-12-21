@@ -11,7 +11,7 @@ open SyntaxeAbstr
 %token TIMES
 %token L_PAR "(" R_PAR ")"
 %token L_ACC "{" R_ACC "}"
-%token LT GT LEQ GEQ
+%token LT GT LEQ GEQ EQ NEQ
 %token INT BOOL VOID
 %token TRUE FALSE
 %token NOT "!"
@@ -20,12 +20,11 @@ open SyntaxeAbstr
 %token RETURN
 %token EOF
 
-%left LT LEQ GT GEQ
-%left NOT
+%left LT LEQ GT GEQ EQ NEQ
 %left PLUS MINUS
 %left TIMES
-%nonassoc MINUS_U
 
+%nonassoc NOT
 %start prog
 %type <SyntaxeAbstr.prog> prog
 
@@ -73,27 +72,32 @@ global:
 | INT i=IDENT SEMICOLON {Printf.printf "global int sans valeur\n" ;(i,Int)}
 | BOOL i=IDENT SEMICOLON {Printf.printf "global false\n"; (i,Bool)}
 (*cas avec valeur*)
-| INT i=IDENT "=" value = expr SEMICOLON {(i,Int)}
-| BOOL i=IDENT "=" value = TRUE  SEMICOLON {(i,Bool)}
-| BOOL i=IDENT "=" value = FALSE  SEMICOLON {(i,Bool)}
+| INT i=IDENT "="  expr SEMICOLON {(i,Int)}
+| BOOL i=IDENT "=" expr  SEMICOLON {(i,Bool)}
+| BOOL i=IDENT "=" expr  SEMICOLON {(i,Bool)}
 ;
 
 expr:
 (*constante*)
 | n = CONST
 	{Cst n}
+| TRUE {Cst 1}
+| FALSE {Cst 0}
 (*Opération binaire*)
 | e1=expr op=binop e2=expr
 	{Binop(op,e1,e2)}
+| "(" e = expr ")" 
+	{e}
 (* acces variable *)
 | id=IDENT
 	{Get(id)}
 (*appel fonction *)
-| id=IDENT "(" e = separated_list(COMMA,expr) ")" 								 
+| id=IDENT "(" e = separated_list(COMMA,expr) ")"						 
 	{Call(id,e)}
 (*negation*)
 | "!" e = expr
 	{Not(e)}
+| "-" e = expr {Binop(Mul,e,Cst (-1))}
 ;
 
 instr:
@@ -124,6 +128,8 @@ instr:
 | GT {Lt}
 | LEQ {Lt}
 | GEQ {Lt}
+| EQ {Eq}
+| NEQ {Neq}
 ;
 
 %inline typesVar:

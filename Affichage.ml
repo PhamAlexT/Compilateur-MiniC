@@ -107,7 +107,7 @@ let drawFunction file f indiceLabel=
     |[]->acc
     |(e1,e2,e3)::tl -> let t = (e1,e2) in aux tl (t::acc)
   in 
-  
+
   fprintf file  "nt%i [label= \" %s \"];\n" indiceLabel f.SyntaxeAbstr.name;
   let prov = aux f.SyntaxeAbstr.locals [] in
   let locals = List.map (fun x -> fst x) prov in
@@ -115,8 +115,13 @@ let drawFunction file f indiceLabel=
   let nbParams = listOfFun file params (1+indiceLabel) "Params" in
 
   let nbLocals = listOfFun file locals (1+indiceLabel+nbParams) "Locales" in
-
-  nbLocals+ nbParams
+  let idMax = nbLocals+ nbParams in 
+  let rec dessinparamArgs acc = match acc with
+    |0->()
+    |_-> fprintf file "nt%d -> nt%d [ label = \" \" ];\n" indiceLabel (indiceLabel+acc); dessinparamArgs (acc-1)
+  in
+  dessinparamArgs idMax;
+  idMax
 ;;
 
 let drawFunctions file listF indiceLabel =

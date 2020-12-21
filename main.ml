@@ -7,6 +7,7 @@ let () =
   let prog = AnalyseurSyntaxique.prog AnalyseurLexical.token lexbuf in
   (*verificateur de type sur le prog obtenu precedemment*)
   let _ = AnalyseurTypage.analyseProgramme prog in
+  let _ = Affichage.affichageArbre prog in
   ignore(prog);
   close_in c;
   Printf.printf "-------------------FIN PROG----------------- \n";

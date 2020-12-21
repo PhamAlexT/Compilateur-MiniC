@@ -1,5 +1,5 @@
 int PARAM = 6;
-bool PARAM = true;
+bool PARAMS = true;
 int test = 0;
 int fact(int n)
 {

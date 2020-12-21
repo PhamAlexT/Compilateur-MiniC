@@ -103,14 +103,16 @@ prog: BOOL IDENT AFF TRUE WHILE
 Une tentative d'affichage sur Console a été fait et est disponible sous le nom de *Affichage2.ml* mais la partie utilisé est sur *Affichage.ml*
 
  Pour cette partie, on récupère les résultats de la partie d'analyse de typage.
- On récupère les variables globales et toutes les fonctions définis et on essaye de tracer un arbre en utilisant le plus possible un arbre. Notre meilleur résultat est:
+ On récupère les variables globales et toutes les fonctions définis et on essaye de tracer un arbre en utilisant le plus possible un arbre. Notre meilleur résultat est (sur le fichier test *testSoft.c*.):
  
- ![ArbreAbstrait](res/ArbreAbstr.png) sur le fichier test *testSoft.c*.
+ ![ArbreAbstrait](res/ArbreAbstr.png) 
+
 
 Ce fichier est obtenu en utilisant *graphviz* et la commande *dot -Tpng ArbreSyntaxeAbstr.dot -o ArbreAbstr.png*.
 Le plus dur est:
 * De ne pas s'emmêler sur la gestion des indices.
 * Le faire de la manière le plus récursive possible tout en faisant attention aux indices.
 * Nous avons réalisé plus tard  que nous étions pas obligés d'utiliser des numéros pour identifier les labels...
-Si *graphviz* est installé, lancer *sh Draw.sh* compile le programme, le lance et génère un png de l'arbre.
+
+Si *graphviz* est installé, lancer *sh Draw.sh* compile le programme, le lance et génère le même arbre.
 L'idée de faire un arbre de cette manière nous vient du fait que *menhir* génère un graph de cette manière que ca nous semblait intéressant.

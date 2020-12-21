@@ -55,7 +55,8 @@ let listOfFun file l indiceLabel typeL =
 (* Dessinne et retourne le nombre de noeuds nécessaire *)
 (* TODO: Relier...?*)
 let rec toNodeExp file e indiceCourant = 
-  let rec aux exp indiceEcrire = match exp with 
+  let rec aux exp indiceEcrire = match exp with
+    | CreaBool(b) ->fprintf file "nt%d [label = \" BOOL \"" indiceCourant;1
     | Cst (n) -> fprintf file "nt%d [label = \" %d \"]" indiceCourant n;1
     | Get(i) -> fprintf file "nt%d [label = \" %s \"]" indiceCourant i; 1
 
@@ -102,14 +103,20 @@ let rec toNodeInstr file i indiceCourant =
 ;;
 (* Retourne le nb de noeuds nécessaire pour la suite? *)
 let drawFunction file f indiceLabel=
+  let rec aux l acc= match l with
+    |[]->acc
+    |(e1,e2,e3)::tl -> let t = (e1,e2) in aux tl (t::acc)
+  in 
+  
   fprintf file  "nt%i [label= \" %s \"];\n" indiceLabel f.SyntaxeAbstr.name;
-  let locals = List.map (fun x -> fst x) f.SyntaxeAbstr.locals in
+  let prov = aux f.SyntaxeAbstr.locals [] in
+  let locals = List.map (fun x -> fst x) prov in
   let params = List.map (fun x -> fst x) f.SyntaxeAbstr.params in
   let nbParams = listOfFun file params (1+indiceLabel) "Params" in
 
   let nbLocals = listOfFun file locals (1+indiceLabel+nbParams) "Locales" in
 
-  (nbLocals+nbParams)
+  nbLocals+ nbParams
 ;;
 
 let drawFunctions file listF indiceLabel =
@@ -126,7 +133,9 @@ let drawFunctions file listF indiceLabel =
     in let _ = aux file listF 1 in
     ()
 ;;
+
 let getDot couplet =
+
   (* Récupération des noms de variables*)
   let globals = List.map (fun x -> fst x) (hashMapToList (fst couplet)) in
   (* Récupération des définitions de fonctions*)
@@ -143,5 +152,7 @@ let getDot couplet =
   (* Fin,*)
   fprintf file "}";
   close_out file;
+
+  ()
 ;;
 let _ = getDot;;

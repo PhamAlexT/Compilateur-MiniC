@@ -73,8 +73,9 @@ globals:
 (*valeur globales d'un programme *)
 global:
 (*cas sans value : initialise un int a 0 et un bool a false*)
-| t = typesVar i = IDENT "=" e = expr ";" {(i,t)}
-| t = typesVar i = IDENT ";" {(i,t)}
+| t = typesVar i = IDENT "=" e = expr ";" {(i,t,e)}
+| INT i = IDENT ";" {(i,Int, Cst 0)}
+| BOOL i = IDENT ";" {(i,Bool,CreaBool false)}
 (*
 | INT i=IDENT SEMICOLON {Printf.printf "global int sans valeur\n" ;(i,Int)}
 | BOOL i=IDENT SEMICOLON {Printf.printf "global false\n"; (i,Bool)}
@@ -87,8 +88,8 @@ expr:
 (*constante*)
 | n = CONST
 	{Cst n}
-| TRUE {Cst 1}
-| FALSE {Cst 0}
+| TRUE {CreaBool true}
+| FALSE {CreaBool false}
 (*Opération binaire*)
 | e1=expr op=binop e2=expr
 	{Binop(op,e1,e2)}

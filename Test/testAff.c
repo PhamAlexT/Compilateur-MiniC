@@ -14,10 +14,9 @@ int fact(int n)
 }
 
 void calcul (int p, bool c){
-   int local1 = 0;
+   int local1 = 1 + 2;
    bool local2 = true;
-   local1 = 1+2;
-   local2 = !local2;
+   local1 = 3;
 }
 
 

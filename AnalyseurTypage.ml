@@ -5,11 +5,11 @@ let varGlobales : (string,typ) Hashtbl.t = Hashtbl.create 4;;
 
 (*notre environnement est compose des variables connus a un certain moment et des fonctions deja traites : *)
 (*on donne un type specifique au element en fonction de ce qu'ils sont*)
+
 type membre_envir=
   | FunDef of fun_def
   | TypeVariable of typ
-
-(*aide affichage - debuggage*)
+  (*aide affichage - debuggage*)
 let typeToString t = 
   match t with
   | Int -> "Int"
@@ -32,27 +32,14 @@ let messageProposition nom environnement =
   aux (hashMapToList environnement);
 ;;
 
-(*fonction initialisant Hashtbl des variables globales*)
-let creaGlobales  l =
-  let rec aux l = 
-    match l with
-    | [] -> ()
-    | (i , t )::tl ->
-      match (Hashtbl.find_opt varGlobales i) with 
-      |None-> Hashtbl.add varGlobales i t;aux tl
-      |_ -> failwith ("Erreur: 2 variables globales de même nom.");
-        ;
-  in
 
-  aux l;
-  printf "Nombre de variable globales dans le programme : %d \n\n" (Hashtbl.length varGlobales)
-;;
 
 (*Fonction verifiant les types des expr dans l'environnement (qui est une Hashtbl) *)
 let rec analyseExpression expr (environnement: (string, membre_envir) Hashtbl.t ) : typ =
   match expr with
   (*cst : int*)
   |Cst n -> Int
+  |CreaBool b -> Bool
   (*verifier que la variable existe ds la Hashtbl*)   
   |Get i -> (match Hashtbl.find_opt environnement i with
       |None -> let message = messageProposition i environnement in failwith message
@@ -101,6 +88,62 @@ let rec analyseExpression expr (environnement: (string, membre_envir) Hashtbl.t 
   |Not(e) -> match (analyseExpression e environnement) with
     |Bool -> Bool
     |_-> let msg = (sprintf "Une négation a été mis devant une expression non booléenne " ) in failwith msg
+;;
+
+let rec analyseExpressionGlobale expr (environnement: (string, typ) Hashtbl.t ) : typ =
+  match expr with
+  (*cst : int*)
+  |Cst n -> Int
+  |CreaBool b -> Bool
+  (*verifier que la variable existe ds la Hashtbl*)   
+  |Get i -> (match Hashtbl.find_opt environnement i with
+      |None -> let message = "Problème pour la définition d'une variable globale." in failwith message
+      |Some(membre) -> membre
+      (*ds une operation: les comparaisons obligent des bool et pour les op arithmetiques: int*) 
+    )
+  |Binop(op,e1,e2) -> (match op with
+      |Lt | Gt | Leq | Geq ->( match (analyseExpressionGlobale e1 environnement, analyseExpressionGlobale e2 environnement) with
+          |(Int,Int) -> Bool
+          |_-> failwith "Erreur: Les opérateurs de comparaison n'opèrent pas sur des int seulement."
+        )
+      | Eq | Neq -> (let t1 = analyseExpressionGlobale e1 environnement in
+                     let t2 = analyseExpressionGlobale e2 environnement in
+                     match (t1,t2) with
+                     |(Int,Int) -> Bool
+                     |(Bool,Bool) -> Bool
+                     |_->failwith "Opération logique mal typés")
+      |_ -> let t1 = analyseExpressionGlobale e1 environnement in
+        let t2 = analyseExpressionGlobale e2 environnement in
+        match (t1,t2) with
+        |(Int,Int) -> Int
+        |_->failwith "Opération arithmétiques mal typés"
+    )
+  (* Negation de val boolenne*)
+  |Not(e) ->( match (analyseExpressionGlobale e environnement) with
+      |Bool -> Bool
+      |_-> let msg = (sprintf "Une négation a été mis devant une expression non booléenne " ) in failwith msg)
+  |Call(_,_) -> failwith "Erreur, tentative d'utilisation de fonction lors de la définition de globale"
+
+
+;;
+(*fonction initialisant Hashtbl des variables globales*)
+let creaGlobales  l =
+  let rec aux l = 
+    match l with
+    | [] -> ()
+    | (i , t , e)::tl ->
+      match (Hashtbl.find_opt varGlobales i) with 
+      |None-> (let t2 = analyseExpressionGlobale e varGlobales in
+               match t2=t with
+               |true -> Hashtbl.add varGlobales i t; aux tl
+               |_->let msg = sprintf ("Erreur: La variable globale %s n'est pas bien initialisée")  i in 
+                 failwith msg) 
+      |_ -> failwith ("Erreur: 2 variables globales de même nom.");
+        ;
+  in
+
+  aux l;
+  printf "Nombre de variable globales dans le programme : %d \n\n" (Hashtbl.length varGlobales)
 ;;
 
 (*Fonction analysant les instructions*)
@@ -191,10 +234,14 @@ let analyseFonction fun_definition infosFunction =
   let rec hashLocal l =
     match l with 
     | [] -> ()
-    | (i,t)::tl -> match Hashtbl.find_opt locales i with 
-      |None -> (*printf "Test: %s de type %s \n" i (typeToString t) ;*) Hashtbl.add locales i (TypeVariable t); hashLocal tl
-      |_-> let message = sprintf "La variable locale %s a été défini 2 fois." i in failwith message
+    | (i,t,e)::tl -> match Hashtbl.find_opt locales i with 
+      |None -> (let t2 =  analyseExpression e environnement in
+                if t2 = t then (Hashtbl.add environnement i (TypeVariable t); (hashLocal tl))
+                else let msg = sprintf "La variable %s est mal initialisé" i in failwith msg
+               )
+      |_->failwith "Variable défini 2 fois."
   in
+
   hashLocal fun_definition.SyntaxeAbstr.locals;
   (*ajout ds environnement*)
   addHashtbl environnement locales;
@@ -294,7 +341,7 @@ let analysesFonction l=
 let analyseProgramme prog =
   presenceMain (List.rev prog.functions);
   creaGlobales (prog.globals);
-  
+
   let infoFs = analysesFonction (prog.functions) in 
   printf "L'analyse de typage est terminée.\n\n";
   (varGlobales,infoFs)

@@ -27,5 +27,5 @@ let gapWord s1 s2 =
 
 (*renvoie vrai si les deux mots sont proches et on on aurait pu confoncre*)
 let isClose s1 s2 =
-  if ((gapWord s1 s2 ) < 25.0) && ( 0. < (gapWord s1 s2 ))  then true else false
+  if ((gapWord s1 s2 ) < 21.0) && ( 0. < (gapWord s1 s2 ))  then true else false
 ;;

@@ -2,7 +2,6 @@ type typ =
     | Int
     | Bool
     | Void
-
 type binop=
     |Add
     |Sub
@@ -15,6 +14,7 @@ type binop=
     |Neq
 type expr =
     | Cst  of int
+    | CreaBool of bool
     | Binop  of binop * expr * expr
     | Get  of string
     | Call of string * expr list
@@ -33,12 +33,12 @@ type fun_def = {
     name:   string;
     params: (string * typ) list;
     return: typ;
-    locals: (string * typ) list;
+    locals: (string * typ * expr) list;
     code:   seq;
 }
 
 type prog = {
-    globals:   (string * typ) list;
+    globals:   (string * typ * expr) list;
     functions: fun_def list;
 }
 

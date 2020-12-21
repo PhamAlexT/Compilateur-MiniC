@@ -70,7 +70,7 @@ let ident = (alpha) (alpha | ['0'-'9'] | '_')*
 rule token = parse
                       | ' '    { space(); token lexbuf }
                       | '\n'   { newline(); new_line lexbuf;token lexbuf }
-                      | '-'?digit+ as s { CONST (int_of_string s) }
+                      | digit+ as s { CONST (int_of_string s) }
                       | ident as s { keyword_or_ident s}
                       | "==" {EQ}
                       | "!=" {NEQ}

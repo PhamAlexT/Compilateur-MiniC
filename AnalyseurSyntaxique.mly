@@ -74,7 +74,6 @@ global:
 (*cas avec valeur*)
 | INT i=IDENT "="  expr SEMICOLON {(i,Int)}
 | BOOL i=IDENT "=" expr  SEMICOLON {(i,Bool)}
-| BOOL i=IDENT "=" expr  SEMICOLON {(i,Bool)}
 ;
 
 expr:

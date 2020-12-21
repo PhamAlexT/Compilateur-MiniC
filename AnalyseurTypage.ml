@@ -87,6 +87,9 @@ let rec analyseExpression expr (environnement: (string, membre_envir) Hashtbl.t 
         |(Int,Int) -> Int
         |_->failwith "Opération arithmétiques mal typés"
     )
+  |Not(e) -> match (analyseExpression e environnement) with
+    |Bool -> Bool
+    |_-> let msg = (Printf.sprintf "Une négation a été mis devant une expression non booléenne " ) in failwith msg
 ;;
 
 (*Fonction analysant les instructions*)

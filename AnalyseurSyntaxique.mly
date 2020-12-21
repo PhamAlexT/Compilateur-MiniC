@@ -14,12 +14,14 @@ open SyntaxeAbstr
 %token LT GT LEQ GEQ
 %token INT BOOL VOID
 %token TRUE FALSE
+%token NOT "!"
 %token IF ELSE WHILE
 %token PUTCHAR
 %token RETURN
 %token EOF
 
 %left LT LEQ GT GEQ
+%left NOT
 %left PLUS MINUS
 %left TIMES
 %nonassoc MINUS_U
@@ -88,7 +90,9 @@ expr:
 	{Get(id)}
 (*appel fonction *)
 | id=IDENT "(" e = separated_list(COMMA,expr) ")"  (* pour un appel de fonctions : essai (a, b+c) : identifiant + plusieurs expr qu'on veut mettre en liste chaque expr est separe par une virgule*)								 
-	{Call(id,e)} 
+	{Call(id,e)}
+| "!" e = expr
+	{Not(e)}
 ;
 
 instr:

@@ -16,7 +16,7 @@ Commande pour éxecuter:
 ## Comment le compilateur fonctionne:
 * Une analyse lexicale est réalisée.
 * Une analyse syntaxique est réalisée. Voici l'arbre de la grammaire que menhir génère (à l'aide de l'option --graph) : ![arbre](res/ArbreDuLangage.png)
-* Enfin, vient l'étapde d'analyse du typage. Premièrement, notre compilateur vérifie qu'un main est bien présent. Dans le cas où ce n'est pas le cas, une erreur est déclenchée.
+* Enfin, vient l'étape de d'analyse du typage. Premièrement, notre compilateur vérifie qu'un main est bien présent. Dans le cas où ce n'est pas le cas, une erreur est déclenchée.
 * Les globales sont toutes chargés une à une.
 * Lorsqu'une fonction est analysée, nous créons un environnement qui contient:
     * Les variables globales.

@@ -45,6 +45,7 @@ let print_token = function
   | BOOL -> printf "BOOL\n"
   | TRUE -> printf "TRUE\n"
   | FALSE -> printf "FALSE\n"
+  | NOT -> printf "NOT\n"
   | VOID -> printf "VOID\n"
   | IF -> printf "IF\n"
   | ELSE ->printf "ELSE\n"
@@ -83,6 +84,7 @@ rule token = parse
                       | "<=" {LEQ}
                       | ';' {SEMICOLON}
                       | ',' {COMMA}
+                      | '!' {NOT}
                       | _ as c {	failwith	(sprintf "ERREUR: Caractère illégale : %c Position : Ligne %i, Colonne %i, " c !line !col )}
                       |eof { EOF}
 {

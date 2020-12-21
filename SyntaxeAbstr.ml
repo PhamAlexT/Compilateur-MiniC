@@ -16,7 +16,7 @@ type expr =
     | Binop  of binop * expr * expr
     | Get  of string
     | Call of string * expr list
-
+    | Not of expr
 type instr =
     | Putchar of expr
     | Set     of string * expr
